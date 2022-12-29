@@ -3,13 +3,7 @@ import { z } from "zod";
 import { signJWT } from "../utils/signJWT";
 import { TRPCError } from "@trpc/server";
 import Prisma from "@prisma/client";
-/// create user
-
-export const createUserSchema = z.object({
-  phoneNumber: z.string(),
-  deviceId: z.string().optional(),
-});
-export type CreateUser = z.infer<typeof createUserSchema>;
+import { sendSMSCodeController } from "./sms.controller";
 
 type UserRouterArgsController<T = null> = T extends null
   ? {
@@ -19,6 +13,14 @@ type UserRouterArgsController<T = null> = T extends null
       ctx: Context;
       input: T;
     };
+
+/// create user
+
+export const createUserSchema = z.object({
+  phoneNumber: z.string(),
+  deviceId: z.string().optional(),
+});
+export type CreateUser = z.infer<typeof createUserSchema>;
 
 export async function createUserController({
   ctx,
@@ -52,17 +54,24 @@ export async function createUserController({
 ////
 
 //// login user
-export const loginUserSchema = z.object({
+export const SendVerifyCodeSchema = z.object({
   phoneNumber: z.string(),
-  code: z.string().max(6),
+  hash: z.string(),
 });
-export type LoginUser = z.infer<typeof loginUserSchema>;
+export type SendVerifyCode = z.infer<typeof SendVerifyCodeSchema>;
 
-export async function loginController({
+export async function sendVerifyCodeController({
   ctx,
   input,
-}: UserRouterArgsController<LoginUser>) {
-  const { prisma, res } = ctx;
+}: UserRouterArgsController<SendVerifyCode>) {
+  const { prisma } = ctx;
+
+  if (!input.phoneNumber) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "phonenumber is invalid",
+    });
+  }
 
   const findUser = await prisma.user.findUnique({
     where: {
@@ -76,15 +85,78 @@ export async function loginController({
       message: "user not found",
     });
   }
+  const generatedCode = Math.random().toString().substring(2, 8);
 
-  
+  const text = `Code: ${generatedCode} 
+  کد ورود شما به زیپ وی
+ 
+ ${input.hash}`;
+  const body = {
+    from: "50004001338886",
+    to: input.phoneNumber,
+    text,
+  };
 
-  return signJWT({ res, user: findUser }).then(
+  const { status: tokenCodeStatus } = await sendSMSCodeController({
+    body,
+  });
+
+  if (tokenCodeStatus !== "ارسال موفق بود") {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "مشکل در ارسال کد تایید",
+    });
+  }
+
+  const updateUser = await prisma.user.update({
+    where: {
+      phoneNumber: input.phoneNumber,
+    },
+    data: {
+      loginCode: generatedCode,
+    },
+  });
+  if (!updateUser)
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      cause: "creating login code",
+    });
+
+  return { status: "ok" };
+}
+////
+
+//// verify login code
+export const VerifyLoginCodeSchema = z.object({
+  code: z.string().length(6),
+  phoneNumber: z.string().max(13),
+});
+export type VerifyLoginCode = z.infer<typeof VerifyLoginCodeSchema>;
+export async function verifyLoginCodeController({
+  ctx,
+  input,
+}: UserRouterArgsController<VerifyLoginCode>) {
+  const { code, phoneNumber } = input;
+  const findUser = await ctx.prisma.user.findUnique({
+    where: {
+      phoneNumber,
+    },
+  });
+  if (findUser?.loginCode != code) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "inputs are not valid",
+      cause: "phonenumber or code is invalid",
+    });
+  }
+
+  return signJWT({ res: ctx.res, user: findUser }).then(
     ({ accessToken, refreshToken }) => {
       return { accessToken, refreshToken };
     }
   );
 }
+
 ////
 
 //// users list

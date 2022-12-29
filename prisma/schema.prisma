@@ -16,6 +16,7 @@ model User {
   phoneNumber String?   @unique
   role        role      @default(USER)
   Session     Session[]
+  loginCode   String?
 }
 
 model Session {

@@ -1,9 +1,11 @@
 import {
   createUserController,
   createUserSchema,
-  loginController,
-  loginUserSchema,
+  sendVerifyCodeController,
+  SendVerifyCodeSchema,
   users,
+  verifyLoginCodeController,
+  VerifyLoginCodeSchema,
 } from "../controllers/user.controller";
 import { router, publicProcedure, userProtectedProcedure } from "../trpc";
 
@@ -11,6 +13,11 @@ export const userRouter = router({
   createUser: publicProcedure
     .input(createUserSchema)
     .mutation(createUserController),
-  loginUser: publicProcedure.input(loginUserSchema).mutation(loginController),
+  sendVerifyCode: publicProcedure
+    .input(SendVerifyCodeSchema)
+    .mutation(sendVerifyCodeController),
+  verifyLoginCode: publicProcedure
+    .input(VerifyLoginCodeSchema)
+    .mutation(verifyLoginCodeController),
   users: userProtectedProcedure.query(users),
 });
