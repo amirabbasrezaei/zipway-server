@@ -19,7 +19,7 @@ export const isUserAuthed = async ({ ctx, next }: IsUserAuthed) => {
       message: 'you are not authorize to request'
     })
   }
-  
+
   return next({
     ctx,
   });

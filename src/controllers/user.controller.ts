@@ -18,17 +18,21 @@ type UserRouterArgsController<T = null> = T extends null
 
 export const createUserSchema = z.object({
   phoneNumber: z.string(),
-  deviceId: z.string().optional(),
+  nameAndFamily: z.string(),
 });
 export type CreateUser = z.infer<typeof createUserSchema>;
+
+type CreateUserPayload = {
+  accessToken: string | null;
+  refreshToken: string | null;
+};
 
 export async function createUserController({
   ctx,
   input,
-}: UserRouterArgsController<CreateUser>) {
+}: UserRouterArgsController<CreateUser>): Promise<CreateUserPayload> {
   const { prisma, res } = ctx;
-
-  const { phoneNumber } = input;
+  const { phoneNumber, nameAndFamily } = input;
   const findUser = await prisma.user.findUnique({
     where: {
       phoneNumber,
@@ -43,12 +47,16 @@ export async function createUserController({
   const createdUser = await prisma.user.create({
     data: {
       phoneNumber,
+      name: nameAndFamily,
     },
   });
 
-  const {} = signJWT({ res, user: createdUser });
+  const { accessToken, refreshToken } = await signJWT({
+    res,
+    user: createdUser,
+  });
 
-  return { createdUser };
+  return { accessToken, refreshToken };
 }
 
 ////
@@ -60,10 +68,15 @@ export const SendVerifyCodeSchema = z.object({
 });
 export type SendVerifyCode = z.infer<typeof SendVerifyCodeSchema>;
 
+type SendVerifyCodeControllerPayload = {
+  status: string;
+  isNewUser: boolean;
+};
+
 export async function sendVerifyCodeController({
   ctx,
   input,
-}: UserRouterArgsController<SendVerifyCode>) {
+}: UserRouterArgsController<SendVerifyCode>): Promise<SendVerifyCodeControllerPayload> {
   const { prisma } = ctx;
 
   if (!input.phoneNumber) {
@@ -80,10 +93,7 @@ export async function sendVerifyCodeController({
   });
 
   if (!findUser) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "user not found",
-    });
+    return { status: "ok", isNewUser: true };
   }
   const generatedCode = Math.random().toString().substring(2, 8);
 
@@ -122,7 +132,7 @@ export async function sendVerifyCodeController({
       cause: "creating login code",
     });
 
-  return { status: "ok" };
+  return { status: "ok", isNewUser: false };
 }
 ////
 
