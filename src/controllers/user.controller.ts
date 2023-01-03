@@ -38,6 +38,7 @@ export async function createUserController({
       phoneNumber,
     },
   });
+  
   if (findUser) {
     throw new TRPCError({
       code: "BAD_REQUEST",

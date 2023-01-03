@@ -17,18 +17,55 @@ type AppRouterArgsController<T = null> = T extends null
       input: T;
     };
 
-export const zipwayConfigSchema = z.object({});
+export const zipwayConfigSchema = z.object({
+  deviceId: z.string(),
+  deviceModel: z.string(),
+  phoneNumber: z.string(),
+  appVersion: z.string(),
+  deviceManufacturer: z.string()
+});
 export type ZipwayConfig = z.infer<typeof zipwayConfigSchema>;
 
-type ZipwayConfigPayload = {
-  mapStyles: any;
+type BannerType = {
+  message: string;
+  canClose: boolean;
+  image: {
+    url: string;
+    height: number;
+    width: number;
+  } | null;
+  bottomImage: {
+    url: string;
+    height: number;
+    width: number;
+  } | null
 };
 
-export async function zipwayConfigController({}: AppRouterArgsController<ZipwayConfig>): Promise<ZipwayConfigPayload> {
+type ZipwayConfigPayload = {
+  mapStyles: any | null;
+  banner: BannerType | null;
+};
+
+export async function zipwayConfigController({ input}: AppRouterArgsController<ZipwayConfig>): Promise<ZipwayConfigPayload> {
   const response = await axios.get(
     "https://tile.maps.snapp.ir/styles/snapp-style/style.json"
   );
-  return { mapStyles: response.data };
+
+  console.log(input)
+
+  
+  // const banner = {
+  //   message: "لطفا برنامه را آپدیت کنید",
+  //   canClose: false,
+  //   image: {
+  //     url: "https://static.thenounproject.com/attribution/4496977-600.png",
+  //     width: 120,
+  //     height: 120,
+  //   },
+  //   bottomImage: null
+  // };
+
+  return { mapStyles: response.data, banner: null };
 }
 
 export const coordinateToAddressSchema = z.object({

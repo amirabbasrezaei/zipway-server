@@ -4,11 +4,12 @@ import {
   placeBaseSearchController,
   placeBaseSearchSchema,
   zipwayConfigController,
+  zipwayConfigSchema,
 } from "../controllers/app.controller";
 import { router, userProtectedProcedure } from "../trpc";
 
 export const zipwayAppRouter = router({
-  zipwayConfig: userProtectedProcedure.query(zipwayConfigController),
+  zipwayConfig: userProtectedProcedure.input(zipwayConfigSchema).mutation(zipwayConfigController),
   coordinateToAddress: userProtectedProcedure
     .input(coordinateToAddressSchema)
     .mutation(coordinateToAddressController),
