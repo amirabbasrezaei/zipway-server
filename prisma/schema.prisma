@@ -17,6 +17,7 @@ model User {
   role        role      @default(USER)
   Session     Session[]
   loginCode   String?
+  isVerified  Boolean   @default(false)
 }
 
 model Session {

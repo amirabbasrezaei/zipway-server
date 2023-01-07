@@ -54,18 +54,18 @@ export async function zipwayConfigController({ input}: AppRouterArgsController<Z
   console.log(input)
 
   
-  // const banner = {
-  //   message: "لطفا برنامه را آپدیت کنید",
-  //   canClose: false,
-  //   image: {
-  //     url: "https://static.thenounproject.com/attribution/4496977-600.png",
-  //     width: 120,
-  //     height: 120,
-  //   },
-  //   bottomImage: null
-  // };
+  const banner = {
+    message: "لطفا برنامه را آپدیت کنید",
+    canClose: false,
+    image: {
+      url: "https://static.thenounproject.com/attribution/4496977-600.png",
+      width: 120,
+      height: 120,
+    },
+    bottomImage: null
+  };
 
-  return { mapStyles: response.data, banner: null };
+  return { mapStyles: response.data, banner };
 }
 
 export const coordinateToAddressSchema = z.object({
