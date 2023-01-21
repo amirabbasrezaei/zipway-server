@@ -22,7 +22,7 @@ export const zipwayConfigSchema = z.object({
   deviceModel: z.string(),
   phoneNumber: z.string(),
   appVersion: z.string(),
-  deviceManufacturer: z.string()
+  deviceManufacturer: z.string(),
 });
 export type ZipwayConfig = z.infer<typeof zipwayConfigSchema>;
 
@@ -38,7 +38,7 @@ type BannerType = {
     url: string;
     height: number;
     width: number;
-  } | null
+  } | null;
 };
 
 type ZipwayConfigPayload = {
@@ -46,14 +46,15 @@ type ZipwayConfigPayload = {
   banner: BannerType | null;
 };
 
-export async function zipwayConfigController({ input}: AppRouterArgsController<ZipwayConfig>): Promise<ZipwayConfigPayload> {
+export async function zipwayConfigController({
+  input,
+}: AppRouterArgsController<ZipwayConfig>): Promise<ZipwayConfigPayload> {
   const response = await axios.get(
     "https://tile.maps.snapp.ir/styles/snapp-style/style.json"
   );
 
-  console.log(input)
+  console.log(input);
 
-  
   // const banner = {
   //   message: "لطفا برنامه را آپدیت کنید",
   //   canClose: false,
@@ -102,4 +103,25 @@ export async function placeBaseSearchController({
   });
 
   return response;
+}
+
+type AppLogsPayload = {
+  isSuccess: boolean;
+};
+
+export const appLogsControllerSchema = z.object({
+  error: z.string(),
+  section: z.string(),
+});
+
+export type AppLogsController = z.infer<typeof appLogsControllerSchema>;
+
+export async function appLogsController({
+  input,
+}: AppRouterArgsController<AppLogsController>): Promise<AppLogsPayload> {
+  if (input?.error) {
+    console.log(input);
+    return { isSuccess: true };
+  }
+  return { isSuccess: false };
 }
