@@ -110,9 +110,9 @@ type AppLogsPayload = {
 };
 
 export const appLogsControllerSchema = z.object({
-  error: z.any(),
+  error: z.any().optional(),
   section: z.string(),
-  message: z.any()
+  message: z.any().optional()
 });
 
 export type AppLogsController = z.infer<typeof appLogsControllerSchema>;
