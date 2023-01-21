@@ -110,7 +110,7 @@ type AppLogsPayload = {
 };
 
 export const appLogsControllerSchema = z.object({
-  error: z.string(),
+  error: z.any(),
   section: z.string(),
 });
 
