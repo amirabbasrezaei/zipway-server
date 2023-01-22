@@ -66,7 +66,6 @@ export async function coordinateToAddressRequest({
   latitude,
   longitude,
 }: CoordinateToAddressRequestArgs): Promise<CoordinateToAddressRequestPayload> {
-    console.log(longitude, latitude)
   const response = await axios.get(
     `${BASE_URL}/v5/reverse?lat=${JSON.stringify(
       latitude

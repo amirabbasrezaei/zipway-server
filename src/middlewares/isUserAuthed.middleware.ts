@@ -13,6 +13,7 @@ export const isUserAuthed = async ({ ctx, next }: IsUserAuthed) => {
   const { req, res } = ctx;
   
   const {accessToken} = await getUser(req, res);
+  console.log(accessToken)
   if(!accessToken){
     throw new TRPCError({
       code: 'UNAUTHORIZED',
