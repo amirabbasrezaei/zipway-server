@@ -13,7 +13,7 @@ import { router, userProtectedProcedure, publicProcedure } from "../trpc";
 export const zipwayAppRouter = router({
   zipwayConfig: userProtectedProcedure
     .input(zipwayConfigSchema)
-    .mutation(zipwayConfigController),
+    .query(zipwayConfigController),
   coordinateToAddress: userProtectedProcedure
     .input(coordinateToAddressSchema)
     .mutation(coordinateToAddressController),
