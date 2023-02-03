@@ -3,6 +3,7 @@ import { prisma } from "../context";
 import jwt, { Secret } from "jsonwebtoken";
 import { Session, User } from "prisma/prisma-client";
 import { AccessTokenPayload, RefreshTokenPayload, signJWT } from "./signJWT";
+import { TRPCError } from "@trpc/server";
 
 interface GetUserSession {
   session: Session;
@@ -39,11 +40,16 @@ async function checkRefreshToken(req: Request): Promise<{ user: User | null }> {
     );
 
     // @ts-ignore
-    return await getUserSession(verifyRefreshToken.sessionId as string).then(
-      ({ user }: any) => {
+    return await getUserSession(verifyRefreshToken.sessionId as string)
+      .then(({ user }: any) => {
         return { user };
-      }
-    );
+      })
+      .catch(() => {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: 'you are not authorize to request'
+        });
+      });
   }
   return { user: null };
 }
@@ -106,7 +112,7 @@ export async function getUser(
           accessToken,
           refreshToken,
           accessTokenPayload,
-          refreshTokenPayload
+          refreshTokenPayload,
         };
       }
     );
