@@ -83,11 +83,11 @@ async function setRefreshToken(
     refreshTokenPayload,
     process.env.JWT_PRIVATE_KEY as Secret,
     {
-      expiresIn: Date.now() + 3.156e+10,
+      expiresIn: Date.now() + 7889400000,
     }
   );
   await res.cookie("refreshToken", refreshToken, {
-    expires: new Date(Date.now() + 3.156e+10),
+    expires: new Date(Date.now() + 7889400000),
     httpOnly: true,
   });
 
