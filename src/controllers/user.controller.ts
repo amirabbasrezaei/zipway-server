@@ -152,7 +152,6 @@ export async function sendVerifyCodeController({
     body,
   });
 
-  console.log("Im here")
 
   console.log(tokenCodeStatus)
 

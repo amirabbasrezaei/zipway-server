@@ -2,6 +2,7 @@ import { Response } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 import { User, Session } from "@prisma/client";
 import { prisma } from "../context";
+import { ZodDate } from "zod";
 // import { Session } from "prisma/prisma-client";
 
 export type AccessTokenPayload = {
@@ -41,7 +42,7 @@ async function createSession(userId: string): Promise<Session> {
   const createdSession = await prisma.session.create({
     data: {
       userId,
-      expireDate: String(Date.now() + 7889400000),
+      expireDate: new Date(Date.now() + 7889400000) ,
     },
   });
 
