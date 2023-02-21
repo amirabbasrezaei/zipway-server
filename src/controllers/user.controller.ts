@@ -58,14 +58,16 @@ export async function createUserController({
     const generatedCode = Math.random().toString().substring(2, 8);
 
   const body = { 
-    "bodyId": "125257", 
+    "bodyId": 125257, 
     "to": input.phoneNumber, 
-    "args": [generatedCode, input.hash]
+    "args": [String(generatedCode), String(input.hash)]
   }
 
   const { status: tokenCodeStatus } = await sendSMSCodeController({
     body,
   });
+
+  
 
   if (tokenCodeStatus !== "ارسال موفق بود") {
     throw new TRPCError({
@@ -119,8 +121,11 @@ export async function sendVerifyCodeController({
     throw new TRPCError({
       code: "BAD_REQUEST",
       message: "phonenumber is invalid",
+      cause: "phonenumber is invalid"
     });
   }
+
+  
 
   const findUser = await prisma.user.findUnique({
     where: {
@@ -128,20 +133,28 @@ export async function sendVerifyCodeController({
     },
   });
 
+  
+
   if (!findUser) {
     return { status: "ok", isNewUser: true };
   }
   const generatedCode = Math.random().toString().substring(2, 8);
 
   const body = { 
-    "bodyId": "125257", 
+    "bodyId": 125257, 
     "to": input.phoneNumber, 
-    "args": [generatedCode, input.hash]
+    "args": [String(generatedCode), String(input.hash)]
   }
+
+
 
   const { status: tokenCodeStatus } = await sendSMSCodeController({
     body,
   });
+
+  console.log("Im here")
+
+  console.log(tokenCodeStatus)
 
   if (tokenCodeStatus !== "ارسال موفق بود") {
     throw new TRPCError({

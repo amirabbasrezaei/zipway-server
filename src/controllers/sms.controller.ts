@@ -4,7 +4,7 @@ import axios from "axios";
 //// send sms
 export const sendSMSSchema = z.object({
   body: z.object({
-    bodyId: z.string(),
+    bodyId: z.number(),
     to: z.string(),
     args: z.any().array(),
   }),
@@ -18,10 +18,13 @@ export type SendSMSSchema = z.infer<typeof sendSMSSchema>;
 export async function sendSMSCodeController({
   body,
 }: SendSMSSchema): Promise<SendSMSPayload> {
+
+  console.log(body)
   const response = await axios.post(
     `https://console.melipayamak.com/api/send/shared/67798f12b16441749c66f2a10ae881af`,
     body
   );
+  console.log(response)
   return { recId: response.data.recId, status: response.data.status };
 }
 

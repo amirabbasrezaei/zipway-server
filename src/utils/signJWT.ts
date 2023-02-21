@@ -41,6 +41,7 @@ async function createSession(userId: string): Promise<Session> {
   const createdSession = await prisma.session.create({
     data: {
       userId,
+      expireDate: String(Date.now() + 7889400000),
     },
   });
 
@@ -60,7 +61,7 @@ function setAccessToken(res: Response, user: User): SetAccessTokenOutput {
       expiresIn: Date.now() + 300000,
     }
   );
-   res.cookie("accessToken", accessToken, {
+  res.cookie("accessToken", accessToken, {
     expires: new Date(Date.now() + 300000),
     httpOnly: true,
   });
@@ -72,7 +73,6 @@ async function setRefreshToken(
   res: Response,
   user: User
 ): Promise<SetRefreshTokenOutput> {
-  
   const session = await createSession(user.id);
 
   const refreshTokenPayload: RefreshTokenPayload = {
@@ -94,26 +94,27 @@ async function setRefreshToken(
   return { refreshToken, refreshTokenPayload };
 }
 
-export async function signJWT({ res, user }: SetToken): Promise<SignJWTPayload> {
-
+export async function signJWT({
+  res,
+  user,
+}: SetToken): Promise<SignJWTPayload> {
   const { accessToken, accessTokenPayload } = setAccessToken(res, user);
   return setRefreshToken(res, user)
     .then(({ refreshToken, refreshTokenPayload }) => {
-
       return {
         accessToken,
         accessTokenPayload,
         refreshToken,
         refreshTokenPayload,
       };
-    }).catch((err) => {
-      console.log(err)
+    })
+    .catch((err) => {
+      console.log(err);
       return {
         accessToken,
         accessTokenPayload,
         refreshToken: null,
         refreshTokenPayload: null,
-      }
-    })
-    
+      };
+    });
 }
