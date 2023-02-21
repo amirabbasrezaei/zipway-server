@@ -22,7 +22,7 @@ model User {
 
 model Session {
   id         String   @id @default(uuid())
-  expireDate DateTime @default(now())
+  expireDate DateTime 
   user       User     @relation(fields: [userId], references: [id])
   userId     String
 }

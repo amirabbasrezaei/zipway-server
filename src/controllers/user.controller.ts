@@ -57,15 +57,11 @@ export async function createUserController({
 
     const generatedCode = Math.random().toString().substring(2, 8);
 
-  const text = `Code: ${generatedCode} 
-  کد ورود شما به زیپ وی
- 
- ${input.hash}`;
-  const body = {
-    from: "50004001338886",
-    to: input.phoneNumber,
-    text,
-  };
+  const body = { 
+    "bodyId": "125257", 
+    "to": input.phoneNumber, 
+    "args": [generatedCode, input.hash]
+  }
 
   const { status: tokenCodeStatus } = await sendSMSCodeController({
     body,
@@ -137,15 +133,11 @@ export async function sendVerifyCodeController({
   }
   const generatedCode = Math.random().toString().substring(2, 8);
 
-  const text = `Code: ${generatedCode} 
-  کد ورود شما به زیپ وی
- 
- ${input.hash}`;
-  const body = {
-    from: "50004001338886",
-    to: input.phoneNumber,
-    text,
-  };
+  const body = { 
+    "bodyId": "125257", 
+    "to": input.phoneNumber, 
+    "args": [generatedCode, input.hash]
+  }
 
   const { status: tokenCodeStatus } = await sendSMSCodeController({
     body,

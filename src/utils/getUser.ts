@@ -42,6 +42,7 @@ async function checkRefreshToken(req: Request): Promise<{ user: User | null }> {
     // @ts-ignore
     return await getUserSession(verifyRefreshToken.sessionId as string)
       .then(({ user }: any) => {
+        
         return { user };
       })
       .catch(() => {
