@@ -2,8 +2,7 @@ import { Response } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 import { User, Session } from "@prisma/client";
 import { prisma } from "../context";
-import { ZodDate } from "zod";
-// import { Session } from "prisma/prisma-client";
+
 
 export type AccessTokenPayload = {
   userId: string;
