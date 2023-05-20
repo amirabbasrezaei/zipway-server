@@ -18,13 +18,26 @@ model User {
   Session     Session[]
   loginCode   String?
   isVerified  Boolean   @default(false)
+  Payment     Payment[]
 }
 
 model Session {
   id         String   @id @default(uuid())
-  expireDate DateTime  @default(now())
+  expireDate DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id])
   userId     String
+}
+
+model Payment {
+  id                   String    @id @default(uuid())
+  payment_create_date  DateTime  @default(now())
+  payment_success_date DateTime?
+  user                 User      @relation(fields: [userId], references: [id])
+  userId               String
+  trackId              String?
+  status               Int?
+  isPayed              Boolean   @default(false)
+  paymentId            String
 }
 
 enum role {

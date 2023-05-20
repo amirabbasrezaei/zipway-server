@@ -19,7 +19,7 @@ type UserRouterArgsController<T = null> = T extends null
 export const createUserSchema = z.object({
   phoneNumber: z.string(),
   nameAndFamily: z.string(),
-  hash: z.string(),
+  hash: z.string().optional(),
 });
 export type CreateUser = z.infer<typeof createUserSchema>;
 
@@ -54,42 +54,39 @@ export async function createUserController({
   });
 
   if (createdUser) {
-
     const generatedCode = Math.random().toString().substring(2, 8);
 
-  const body = { 
-    "bodyId": 125257, 
-    "to": input.phoneNumber, 
-    "args": [String(generatedCode), String(input.hash)]
-  }
+    const body = {
+      bodyId: 125257,
+      to: input.phoneNumber,
+      args: [String(generatedCode), input?.hash ? String(input.hash) : ""],
+    };
 
-  const { status: tokenCodeStatus } = await sendSMSCodeController({
-    body,
-  });
-
-  
-
-  if (tokenCodeStatus !== "ارسال موفق بود") {
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "مشکل در ارسال کد تایید",
+    const { status: tokenCodeStatus } = await sendSMSCodeController({
+      body,
     });
-  }
 
-  const updateUser = await prisma.user.update({
-    where: {
-      phoneNumber: input.phoneNumber,
-    },
-    data: {
-      loginCode: generatedCode,
-    },
-  });
-  
-  if (!updateUser)
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      cause: "creating login code",
+    if (tokenCodeStatus !== "ارسال موفق بود") {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "مشکل در ارسال کد تایید",
+      });
+    }
+
+    const updateUser = await prisma.user.update({
+      where: {
+        phoneNumber: input.phoneNumber,
+      },
+      data: {
+        loginCode: generatedCode,
+      },
     });
+
+    if (!updateUser)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        cause: "creating login code",
+      });
 
     return { isUserCreated: true };
   }
@@ -102,7 +99,7 @@ export async function createUserController({
 //// login user
 export const SendVerifyCodeSchema = z.object({
   phoneNumber: z.string(),
-  hash: z.string(),
+  hash: z.string().optional(),
 });
 export type SendVerifyCode = z.infer<typeof SendVerifyCodeSchema>;
 
@@ -121,11 +118,9 @@ export async function sendVerifyCodeController({
     throw new TRPCError({
       code: "BAD_REQUEST",
       message: "phonenumber is invalid",
-      cause: "phonenumber is invalid"
+      cause: "phonenumber is invalid",
     });
   }
-
-  
 
   const findUser = await prisma.user.findUnique({
     where: {
@@ -133,27 +128,22 @@ export async function sendVerifyCodeController({
     },
   });
 
-  
-
   if (!findUser) {
     return { status: "ok", isNewUser: true };
   }
   const generatedCode = Math.random().toString().substring(2, 8);
 
-  const body = { 
-    "bodyId": 125257, 
-    "to": input.phoneNumber, 
-    "args": [String(generatedCode), String(input.hash)]
-  }
-
-
+  const body = {
+    bodyId: 125257,
+    to: input.phoneNumber,
+    args: [String(generatedCode), input?.hash ? String(input.hash) : ""],
+  };
 
   const { status: tokenCodeStatus } = await sendSMSCodeController({
     body,
   });
 
-
-  console.log(tokenCodeStatus)
+  console.log(tokenCodeStatus);
 
   if (tokenCodeStatus !== "ارسال موفق بود") {
     throw new TRPCError({

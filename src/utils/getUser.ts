@@ -58,7 +58,11 @@ async function checkRefreshToken(req: Request): Promise<{ user: User | null }> {
 function checkAccessToken(req: Request) {
   const accessToken = req.cookies["accessToken"];
   if (accessToken) {
-    return jwt.verify(accessToken, process.env.JWT_PRIVATE_KEY as Secret);
+    const token = jwt.verify(accessToken, process.env.JWT_PRIVATE_KEY as Secret);
+    const decode = jwt.decode(accessToken);
+    console.log("token:", token)
+    console.log("decode:", decode)
+    return token
   }
   return null;
 }
