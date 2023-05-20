@@ -52,7 +52,7 @@ export async function createPaymentController({
     const {} = ctx.prisma.payment.create({
       data: {
         paymentId: data.id,
-        userId: "ssfg",
+        userId: "ssfgg",
       },
     });
     console.log(data);
