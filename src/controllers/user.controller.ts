@@ -114,6 +114,7 @@ export async function sendVerifyCodeController({
 }: UserRouterArgsController<SendVerifyCode>): Promise<SendVerifyCodeControllerPayload> {
   const { prisma } = ctx;
 
+
   if (!input.phoneNumber) {
     throw new TRPCError({
       code: "BAD_REQUEST",
