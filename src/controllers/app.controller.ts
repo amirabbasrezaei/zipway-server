@@ -10,10 +10,10 @@ import {
 
 type AppRouterArgsController<T = null> = T extends null
   ? {
-      ctx: Context;
+      ctx: Context<any>;
     }
   : {
-      ctx: Context;
+      ctx: Context<any>;
       input: T;
     };
 
@@ -44,16 +44,26 @@ type BannerType = {
 type ZipwayConfigPayload = {
   mapStyles: any | null;
   banner: BannerType | null;
-};
+  userInfo?: {
+    name: string;
+    credit: number;
+    phoneNumber: string
+  } ;
+} | null;
 
 export async function zipwayConfigController({
-  input,
+  ctx,
 }: AppRouterArgsController<ZipwayConfig>): Promise<ZipwayConfigPayload> {
+  const { user, prisma } = ctx;
   const response = await axios.get(
     "https://tile.maps.snapp.ir/styles/snapp-style/style.json"
   );
-
-  console.log(input);
+  const findUser  = await prisma.user.findUnique({
+    where: {
+      id: user.userId,
+    },
+  });
+  console.log("findUser", findUser);
 
   // const banner = {
   //   message: "لطفا برنامه را آپدیت کنید",
@@ -65,8 +75,15 @@ export async function zipwayConfigController({
   //   },
   //   bottomImage: null
   // };
+  if (!findUser) {
+    return null;
+  }
+  return { mapStyles: response.data, banner: null,userInfo: {
+    name: findUser.name,
+    credit: findUser.credit,
+    phoneNumber: findUser.phoneNumber
+  } };
 
-  return { mapStyles: response.data, banner: null };
 }
 
 export const coordinateToAddressSchema = z.object({
@@ -112,7 +129,7 @@ type AppLogsPayload = {
 export const appLogsControllerSchema = z.object({
   error: z.any().optional(),
   section: z.string(),
-  message: z.any().optional()
+  message: z.any().optional(),
 });
 
 export type AppLogsController = z.infer<typeof appLogsControllerSchema>;

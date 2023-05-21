@@ -2,10 +2,10 @@ import {
   createPaymentController,
   createPaymentSchema,
 } from "../controllers/payment.controller";
-import { router, publicProcedure } from "../trpc";
+import { router, userProtectedProcedure } from "../trpc";
 
 export const paymentRouter = router({
-  createPayment: publicProcedure
+  createPayment: userProtectedProcedure
     .input(createPaymentSchema)
     .mutation(createPaymentController),
 });

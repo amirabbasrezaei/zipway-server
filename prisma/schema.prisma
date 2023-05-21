@@ -9,35 +9,37 @@ datasource db {
 
 model User {
   id          String    @id @default(uuid())
-  name        String?   @db.VarChar(20)
+  name        String    @db.VarChar(20)
   familyName  String?
   password    String?
   email       String?   @unique
-  phoneNumber String?   @unique
+  phoneNumber String   @unique
   role        role      @default(USER)
-  Session     Session[]
   loginCode   String?
   isVerified  Boolean   @default(false)
+  credit      Int       @default(0)
   Payment     Payment[]
+  Session     Session[]
 }
 
 model Session {
   id         String   @id @default(uuid())
   expireDate DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id])
   userId     String
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model Payment {
   id                   String    @id @default(uuid())
   payment_create_date  DateTime  @default(now())
   payment_success_date DateTime?
-  user                 User      @relation(fields: [userId], references: [id])
   userId               String
   trackId              String?
   status               Int?
   isPayed              Boolean   @default(false)
   paymentId            String
+  value                Int       
+  user                 User      @relation(fields: [userId], references: [id])
 }
 
 enum role {

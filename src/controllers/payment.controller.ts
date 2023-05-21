@@ -2,16 +2,15 @@ import { z } from "zod";
 import { Context } from "../context";
 import axios from "axios";
 import { TRPCError } from "@trpc/server";
-// import { TRPCError } from "@trpc/server";
 
 const BASE_URL = `https://api.idpay.ir/v1.1`;
 
 type UserRouterArgsController<T = null> = T extends null
   ? {
-      ctx: Context;
+      ctx: Context<any>;
     }
   : {
-      ctx: Context;
+      ctx: Context<any>;
       input: T;
     };
 
@@ -33,6 +32,7 @@ export async function createPaymentController({
   input,
   ctx,
 }: UserRouterArgsController<CreatePayment>): Promise<CreatePaymentPayload> {
+  const { user } = ctx;
   const body = {
     order_id: 106,
     callback: "http://localhost:3000/payment",
@@ -42,20 +42,22 @@ export async function createPaymentController({
   };
 
   try {
-    console.log("body", body);
     const { data } = await axios.post(`${BASE_URL}/payment`, body, {
       headers: {
         "X-API-KEY": "b99a4efa-4da2-4a08-9d01-ed0c5ba5a33a",
         "X-SANDBOX": true,
       },
     });
-    const {} = ctx.prisma.payment.create({
-      data: {
-        paymentId: data.id,
-        userId: "ssfgg",
-      },
-    });
-    console.log(data);
+    if (data) {
+      const payment = ctx.prisma.payment.create({
+        data: {
+          paymentId: data.id,
+          userId: user.userId,
+          value: input.amount,
+        },
+      });
+      console.log(payment);
+    }
 
     return { pay_link: data.link };
   } catch (error) {

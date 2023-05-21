@@ -59,9 +59,6 @@ function checkAccessToken(req: Request) {
   const accessToken = req.cookies["accessToken"];
   if (accessToken) {
     const token = jwt.verify(accessToken, process.env.JWT_PRIVATE_KEY as Secret);
-    const decode = jwt.decode(accessToken);
-    console.log("token:", token)
-    console.log("decode:", decode)
     return token
   }
   return null;
