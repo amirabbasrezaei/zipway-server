@@ -16,8 +16,6 @@ type UserRouterArgsController<T = null> = T extends null
 
 export const createPaymentSchema = z.object({
   amount: z.number(),
-  name: z.string(),
-  desc: z.string(),
 });
 
 type CreatePaymentPayload =
@@ -32,15 +30,30 @@ export async function createPaymentController({
   input,
   ctx,
 }: UserRouterArgsController<CreatePayment>): Promise<CreatePaymentPayload> {
-  const { user } = ctx;
+  const { user, prisma } = ctx;
+
+  const findUser = await prisma.user.findUnique({
+    where: {
+      id: user.userId,
+    },
+  });
+  if (!findUser) {
+    return new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "کاربر وجود ندارد",
+    });
+  }
+
+  
   const body = {
     order_id: 106,
-    callback: "http://localhost:3000/payment",
-    phone: "09038338886",
-    mail: "adsad",
-    ...input,
+    callback: "https://zipway.ir/payment",
+    phone: findUser.phoneNumber,
+    mail: "zipwaysupp@gmail.com",
+    name: findUser.name,
+    desc: "",
+    amount: input.amount,
   };
-
   try {
     const { data } = await axios.post(`${BASE_URL}/payment`, body, {
       headers: {
@@ -49,7 +62,7 @@ export async function createPaymentController({
       },
     });
     if (data) {
-      const payment = ctx.prisma.payment.create({
+      const payment = await ctx.prisma.payment.create({
         data: {
           paymentId: data.id,
           userId: user.userId,

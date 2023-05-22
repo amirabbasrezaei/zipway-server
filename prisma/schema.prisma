@@ -13,7 +13,7 @@ model User {
   familyName  String?
   password    String?
   email       String?   @unique
-  phoneNumber String   @unique
+  phoneNumber String    @unique
   role        role      @default(USER)
   loginCode   String?
   isVerified  Boolean   @default(false)
@@ -37,8 +37,8 @@ model Payment {
   trackId              String?
   status               Int?
   isPayed              Boolean   @default(false)
-  paymentId            String
-  value                Int       
+  servicePaymentId     String
+  value                Int
   user                 User      @relation(fields: [userId], references: [id])
 }
 
