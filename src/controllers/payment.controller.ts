@@ -44,7 +44,6 @@ export async function createPaymentController({
     });
   }
 
-  
   const body = {
     order_id: 106,
     callback: "https://zipway.ir/payment",
@@ -55,6 +54,12 @@ export async function createPaymentController({
     amount: input.amount,
   };
   try {
+    const payment = await ctx.prisma.payment.create({
+      data: {
+        userId: user.userId,
+        value: input.amount,
+      },
+    });
     const { data } = await axios.post(`${BASE_URL}/payment`, body, {
       headers: {
         "X-API-KEY": "b99a4efa-4da2-4a08-9d01-ed0c5ba5a33a",
@@ -62,14 +67,15 @@ export async function createPaymentController({
       },
     });
     if (data) {
-      const payment = await ctx.prisma.payment.create({
+      const updatedPayment = await ctx.prisma.payment.update({
         data: {
           servicePaymentId: data.id,
-          userId: user.userId,
-          value: input.amount,
+        },
+        where: {
+          id: payment.id,
         },
       });
-      console.log(payment);
+      console.log(updatedPayment);
     }
 
     return { pay_link: data.link };

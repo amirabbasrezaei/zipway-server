@@ -20,7 +20,6 @@ type AppRouterArgsController<T = null> = T extends null
 export const zipwayConfigSchema = z.object({
   deviceId: z.string(),
   deviceModel: z.string(),
-  phoneNumber: z.string(),
   appVersion: z.string(),
   deviceManufacturer: z.string(),
 });
