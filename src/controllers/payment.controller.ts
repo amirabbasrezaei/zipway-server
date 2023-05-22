@@ -64,7 +64,7 @@ export async function createPaymentController({
     if (data) {
       const payment = await ctx.prisma.payment.create({
         data: {
-          paymentId: data.id,
+          servicePaymentId: data.id,
           userId: user.userId,
           value: input.amount,
         },
