@@ -37,7 +37,7 @@ model Payment {
   trackId              String?
   status               Int?
   isPayed              Boolean   @default(false)
-  servicePaymentId     String
+  servicePaymentId     String    @unique
   value                Int
   user                 User      @relation(fields: [userId], references: [id])
 }
