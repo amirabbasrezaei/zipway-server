@@ -6,11 +6,11 @@ import { TRPCError } from "@trpc/server";
 const BASE_URL = `https://api.idpay.ir/v1.1`;
 
 type UserRouterArgsController<T = null> = T extends null
-  ? {
-      ctx: Context<any>;
+  ? { 
+      ctx: Context;
     }
   : {
-      ctx: Context<any>;
+      ctx: Context;
       input: T;
     };
 

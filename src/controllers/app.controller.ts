@@ -10,10 +10,10 @@ import {
 
 type AppRouterArgsController<T = null> = T extends null
   ? {
-      ctx: Context<any>;
+      ctx: Context;
     }
   : {
-      ctx: Context<any>;
+      ctx: Context;
       input: T;
     };
 

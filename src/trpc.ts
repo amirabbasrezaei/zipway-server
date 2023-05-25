@@ -1,11 +1,11 @@
 import { initTRPC } from "@trpc/server";
 import { isUserAuthed } from "./middlewares/isUserAuthed.middleware";
-// import SuperJSON from "superjson";
+import superjson from "superjson";
 
 import { Context } from "./context";
 
 export const t = initTRPC.context<Context>().create({
-  // transformer: SuperJSON,
+  transformer: superjson,
   errorFormatter({ shape }) {
     return shape;
   },

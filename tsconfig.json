@@ -1,3 +1,4 @@
+
 {
   "compilerOptions": {
     "lib": ["es5", "es6", "es7", "esnext", "dom"],
@@ -11,6 +12,7 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "composite": true,
     "sourceMap": true,
     "resolveJsonModule": true,
     /* Strict Type-Checking Options */
