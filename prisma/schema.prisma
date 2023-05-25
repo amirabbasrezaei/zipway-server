@@ -34,7 +34,7 @@ model Payment {
   payment_create_date  DateTime  @default(now())
   payment_success_date DateTime?
   userId               String
-  trackId              String? @unique
+  trackId              String?   @unique
   status               Int?
   isPayed              Boolean   @default(false)
   servicePaymentId     String?   @unique
