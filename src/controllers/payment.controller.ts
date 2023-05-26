@@ -96,13 +96,8 @@ export const inquiryPaymentSchema = z.object({
   track_id: z.string(),
 });
 
-export enum PaymentStatus {
-  PAYED,
-  NOTPAYED,
-}
-
 type InquiryPaymentPayload =
-  | { paymentStatus: PaymentStatus | null; message: string | null }
+  | { paymentStatus:  "PAYED" | "FAILED"; message: string | null }
   | TRPCError;
 
 export type InquiryPayment = z.infer<typeof inquiryPaymentSchema>;
@@ -169,22 +164,22 @@ export async function inquiryPaymentController({
             },
           });
           return {
-            paymentStatus: PaymentStatus.PAYED,
+            paymentStatus: "PAYED",
             message: "پرداخت موفقیت آمیز بود و کیف پول شما شارژ شد.",
           };
         }
         return {
-          paymentStatus: PaymentStatus.PAYED,
+          paymentStatus: "FAILED",
           message: "پرداخت انجام شده ولی تائید تراکنش بت خطا مواجه شد",
         };
       } catch (error) {
         console.log(error);
       }
 
-      return { paymentStatus: PaymentStatus.PAYED, message: null };
+
     }
     return {
-      paymentStatus: PaymentStatus.NOTPAYED,
+      paymentStatus: "FAILED",
       message: "تراکنش ناموفق بوده است.",
     };
   } catch (error) {
