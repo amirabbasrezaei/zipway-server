@@ -9,13 +9,12 @@ interface IsUserAuthed {
 //   user: object
 // }
 
-
 export const isUserAuthed = async ({ ctx, next }: IsUserAuthed) => {
   const { req, res } = ctx;
 
-  const { accessToken: user } = await getUser(req, res);
-  console.log("user", user);
-  if (!user) {
+  const { accessToken, accessTokenPayload } = await getUser(req, res);
+  console.log("user", accessTokenPayload ? accessTokenPayload :  accessToken);
+  if (!accessToken) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "you are not authorize to request",
@@ -23,6 +22,6 @@ export const isUserAuthed = async ({ ctx, next }: IsUserAuthed) => {
   }
 
   return next({
-    ctx: { ...ctx, user },
+    ctx: { ...ctx, user: accessTokenPayload ? accessTokenPayload :  accessToken},
   });
 };

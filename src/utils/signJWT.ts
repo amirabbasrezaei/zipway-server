@@ -23,7 +23,7 @@ type SetToken = {
 interface SignJWTPayload {
   accessTokenPayload: AccessTokenPayload | null;
   refreshTokenPayload: RefreshTokenPayload | null;
-  accessToken: string | null;
+  accessToken:  string | null;
   refreshToken: string | null;
 }
 
@@ -66,7 +66,7 @@ function setAccessToken(res: Response, user: User): SetAccessTokenOutput {
     httpOnly: true,
   });
 
-  return { accessToken, accessTokenPayload };
+  return { accessToken , accessTokenPayload };
 }
 
 async function setRefreshToken(

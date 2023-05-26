@@ -5,8 +5,15 @@ import { TRPCError } from "@trpc/server";
 
 const BASE_URL = `https://api.idpay.ir/v1.1`;
 
-type UserRouterArgsController<T = null> = T extends null
-  ? { 
+const HEADERS = {
+  headers: {
+    "X-API-KEY": "b99a4efa-4da2-4a08-9d01-ed0c5ba5a33a",
+    // "X-SANDBOX": true,
+  },
+};
+
+type PaymentRouterArgsController<T = null> = T extends null
+  ? {
       ctx: Context;
     }
   : {
@@ -29,7 +36,7 @@ export type CreatePayment = z.infer<typeof createPaymentSchema>;
 export async function createPaymentController({
   input,
   ctx,
-}: UserRouterArgsController<CreatePayment>): Promise<CreatePaymentPayload> {
+}: PaymentRouterArgsController<CreatePayment>): Promise<CreatePaymentPayload> {
   const { user, prisma } = ctx;
 
   const findUser = await prisma.user.findUnique({
@@ -44,15 +51,6 @@ export async function createPaymentController({
     });
   }
 
-  const body = {
-    order_id: 106,
-    callback: "https://zipway.ir/payment",
-    phone: findUser.phoneNumber,
-    mail: "zipwaysupp@gmail.com",
-    name: findUser.name,
-    desc: "",
-    amount: input.amount,
-  };
   try {
     const payment = await ctx.prisma.payment.create({
       data: {
@@ -60,12 +58,16 @@ export async function createPaymentController({
         value: input.amount,
       },
     });
-    const { data } = await axios.post(`${BASE_URL}/payment`, body, {
-      headers: {
-        "X-API-KEY": "b99a4efa-4da2-4a08-9d01-ed0c5ba5a33a",
-        "X-SANDBOX": true,
-      },
-    });
+    const body = {
+      order_id: payment.id,
+      callback: "https://zipway.ir/payment",
+      phone: findUser.phoneNumber,
+      mail: "zipwaysupp@gmail.com",
+      name: findUser.name,
+      desc: "",
+      amount: input.amount,
+    };
+    const { data } = await axios.post(`${BASE_URL}/payment`, body, HEADERS);
     if (data) {
       const updatedPayment = await ctx.prisma.payment.update({
         data: {
@@ -84,6 +86,111 @@ export async function createPaymentController({
     return new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "مشکل ارتباط با سرویس پرداخت",
+    });
+  }
+}
+
+export const inquiryPaymentSchema = z.object({
+  servicePaymentId: z.string(),
+  order_id: z.string(),
+  track_id: z.string(),
+});
+
+export enum PaymentStatus {
+  PAYED,
+  NOTPAYED,
+}
+
+type InquiryPaymentPayload =
+  | { paymentStatus: PaymentStatus | null; message: string | null }
+  | TRPCError;
+
+export type InquiryPayment = z.infer<typeof inquiryPaymentSchema>;
+export async function inquiryPaymentController({
+  input,
+  ctx,
+}: PaymentRouterArgsController<InquiryPayment>): Promise<InquiryPaymentPayload> {
+  const { user, prisma } = ctx;
+
+  const findUser = await prisma.user.findUnique({
+    where: {
+      id: user.userId,
+    },
+  });
+  if (!findUser) {
+    return new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "کاربر وجود ندارد",
+    });
+  }
+
+  const inquiryBody = {
+    id: input.servicePaymentId,
+    order_id: input.order_id,
+  };
+
+  try {
+    const inquiryResponse = await axios.post(
+      `${BASE_URL}/payment/inquiry`,
+      inquiryBody,
+      HEADERS
+    );
+    if ([101, 100].filter((e) => inquiryResponse.data.status === e).length) {
+      const verifyPaymentBody = {
+        id: input.servicePaymentId,
+        order_id: input.order_id,
+      };
+      try {
+        const verifyPaymentResponse = await axios.post(
+          `${BASE_URL}/payment/verify`,
+          verifyPaymentBody,
+          HEADERS
+        );
+        if (verifyPaymentResponse?.data?.verify?.date) {
+          await prisma.payment.update({
+            where: {
+              id: input.order_id,
+              servicePaymentId: input.servicePaymentId,
+              trackId: input.track_id,
+            },
+            data: {
+              isPayed: true,
+              payment_success_date: new Date(Date.now()),
+            },
+          });
+          await prisma.user.update({
+            where: {
+              id: user.userId,
+            },
+            data: {
+              credit: {
+                increment: inquiryResponse.data.amount,
+              },
+            },
+          });
+          return {
+            paymentStatus: PaymentStatus.PAYED,
+            message: "پرداخت موفقیت آمیز بود و کیف پول شما شارژ شد.",
+          };
+        }
+        return {
+          paymentStatus: PaymentStatus.PAYED,
+          message: "پرداخت انجام شده ولی تائید تراکنش بت خطا مواجه شد",
+        };
+      } catch (error) {
+        console.log(error);
+      }
+
+      return { paymentStatus: PaymentStatus.PAYED, message: null };
+    }
+    return {
+      paymentStatus: PaymentStatus.NOTPAYED,
+      message: "تراکنش ناموفق بوده است.",
+    };
+  } catch (error) {
+    return new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      cause: "paymentService inquiry problem",
     });
   }
 }
