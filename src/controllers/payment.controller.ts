@@ -131,7 +131,7 @@ export async function inquiryPaymentController({
       HEADERS
     );
     
-    if (inquiryResponse.data.status === '10') {
+    if (inquiryResponse.data.status == 10) {
       const verifyPaymentBody = {
         id: input.servicePaymentId,
         order_id: input.order_id,
@@ -177,67 +177,67 @@ export async function inquiryPaymentController({
         console.log(error);
       }
     }
-    if(inquiryResponse.data.status === '1') {
+    if(inquiryResponse.data.status == '1') {
       return {
         paymentStatus: "WAITING",
         message: "پرداخت انجام نشده است",
       };
     }
-    if(inquiryResponse.data.status === '2') {
+    if(inquiryResponse.data.status == '2') {
       return {
         paymentStatus: "FAILED",
         message: "پرداخت ناموفق بوده است",
       };
     }
-    if(inquiryResponse.data.status === '3') {
+    if(inquiryResponse.data.status == '3') {
       return {
         paymentStatus: "FAILED",
         message: "خطا رخ داده است",
       };
     }
-    if(inquiryResponse.data.status === '4') {
+    if(inquiryResponse.data.status == '4') {
       return {
         paymentStatus: "FAILED",
         message: "بلوکه شده",
       };
     }
-    if(inquiryResponse.data.status === '5') {
+    if(inquiryResponse.data.status == '5') {
       return {
         paymentStatus: "FAILED",
         message: "برگشت به پرداخت کننده",
       };
     }
-    if(inquiryResponse.data.status === '6') {
+    if(inquiryResponse.data.status == '6') {
       return {
         paymentStatus: "FAILED",
         message: "برگشت خورده سیستمی",
       };
     }
-    if(inquiryResponse.data.status === '7') {
+    if(inquiryResponse.data.status == '7') {
       return {
         paymentStatus: "FAILED",
         message: "انصراف از پرداخت",
       };
     }
-    if(inquiryResponse.data.status === '8') {
+    if(inquiryResponse.data.status == '8') {
       return {
         paymentStatus: "WAITING",
         message: "به درگاه پرداخت منتقل شد",
       };
     }
-    if(inquiryResponse.data.status === '100') {
+    if(inquiryResponse.data.status == '100') {
       return {
         paymentStatus: "PAYED",
         message: "پرداخت تایید شده است",
       };
     }
-    if(inquiryResponse.data.status === '101') {
+    if(inquiryResponse.data.status == '101') {
       return {
         paymentStatus: "PAYED",
         message: "پرداخت قبلا تایید شده است",
       };
     }
-    if(inquiryResponse.data.status === '200') {
+    if(inquiryResponse.data.status == '200') {
       return {
         paymentStatus: "WAITING",
         message: "به دریافت کننده واریز شد",
