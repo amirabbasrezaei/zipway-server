@@ -8,7 +8,7 @@ const BASE_URL = `https://api.idpay.ir/v1.1`;
 const HEADERS = {
   headers: {
     "X-API-KEY": process.env.IDPAY_TOKEN,
-    "X-SANDBOX": true,
+    // "X-SANDBOX": true,
   },
 };
 
