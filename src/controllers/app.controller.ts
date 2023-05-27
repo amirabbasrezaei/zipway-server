@@ -79,7 +79,7 @@ export async function zipwayConfigController({
   }
   return { mapStyles: response.data, banner: null,userInfo: {
     name: findUser.name,
-    credit: findUser.credit,
+    credit: findUser.credit / 10,
     phoneNumber: findUser.phoneNumber
   } };
 
