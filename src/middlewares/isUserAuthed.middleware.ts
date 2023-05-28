@@ -11,7 +11,7 @@ interface IsUserAuthed {
 
 export const isUserAuthed = async ({ ctx, next }: IsUserAuthed) => {
   const { req, res } = ctx;
-
+  
   const { accessToken, accessTokenPayload } = await getUser(req, res);
   console.log("user", accessTokenPayload ? accessTokenPayload :  accessToken);
   if (!accessToken) {

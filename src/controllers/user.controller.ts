@@ -114,7 +114,6 @@ export async function sendVerifyCodeController({
 }: UserRouterArgsController<SendVerifyCode>): Promise<SendVerifyCodeControllerPayload> {
   const { prisma } = ctx;
 
-
   if (!input.phoneNumber) {
     throw new TRPCError({
       code: "BAD_REQUEST",
@@ -224,6 +223,40 @@ export async function verifyLoginCodeController({
       return { accessToken, refreshToken };
     }
   );
+}
+
+////
+
+//// Logout
+
+export const LogoutPayloadSchema = z.object({
+  isUserLoggedout: z.boolean(),
+});
+
+export type LogoutController =
+  | {
+      isUserLoggedout: boolean;
+    }
+  | TRPCError;
+export type LogoutPayload = z.infer<typeof LogoutPayloadSchema>;
+export async function logoutController({
+  ctx,
+}: UserRouterArgsController): Promise<LogoutPayload> {
+  const { res, req, prisma } = ctx;
+  const refreshToken = req.cookies["refreshToken"];
+  try {
+    await prisma.session.delete({
+      where: {
+        id: refreshToken,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+
+  return { isUserLoggedout: true };
 }
 
 ////

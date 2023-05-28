@@ -1,6 +1,8 @@
 import {
   createUserController,
   createUserSchema,
+  logoutController,
+  LogoutPayloadSchema,
   sendVerifyCodeController,
   SendVerifyCodeSchema,
   users,
@@ -20,4 +22,5 @@ export const userRouter = router({
     .input(VerifyLoginCodeSchema)
     .mutation(verifyLoginCodeController),
   users: userProtectedProcedure.query(users),
+  logout: userProtectedProcedure.output(LogoutPayloadSchema).mutation(logoutController),
 });
