@@ -40,14 +40,25 @@ type BannerType = {
   } | null;
 };
 
+
+
 type ZipwayConfigPayload = {
   mapStyles: any | null;
   banner: BannerType | null;
-  userInfo?: {
+  userInfo: {
     name: string;
     credit: number;
     phoneNumber: string
   } ;
+  appInfo: {
+    rideWaitingText: string;
+    rideWaitingImageUrl: string;
+    privacyPolicyText: string;
+    createPaymentText: string;
+    minCreatePayment: number;
+    maxCreatePayment: number;
+    logoutAppText: string;
+  }
 } | null;
 
 export async function zipwayConfigController({
@@ -80,7 +91,16 @@ export async function zipwayConfigController({
   return { mapStyles: response.data, banner: null,userInfo: {
     name: findUser.name,
     credit: findUser.credit / 10,
-    phoneNumber: findUser.phoneNumber
+    phoneNumber: findUser.phoneNumber,
+
+  },appInfo:{
+    createPaymentText: "حداقل مبلغ مورد نیاز برای افزایش اعتبار حساب ۲۰۰۰۰ تومان می باشد.",
+    logoutAppText: "؟آیا برای خروج از حساب کاربری خود مطمئنید",
+    maxCreatePayment: 50000000,
+    minCreatePayment: 20000,
+    privacyPolicyText: "",
+    rideWaitingImageUrl: "",
+    rideWaitingText: "در حال یافتن تاکسی برای شما هستیم"
   } };
 
 }
