@@ -20,6 +20,7 @@ model User {
   credit      Int       @default(0)
   Payment     Payment[]
   Session     Session[]
+  Ride        Ride[]
 }
 
 model Session {
@@ -41,6 +42,96 @@ model Payment {
   paymentUrl           String?
   value                Int
   user                 User      @relation(fields: [userId], references: [id])
+}
+
+model Ride {
+  id                     String               @id @default(uuid())
+  originCoordinate       Int[]
+  destinationCoordinates Int[]
+  passenger              User[]
+  finalPrice             Int?
+  createdDate            DateTime             @default(now())
+  finishDate             DateTime?
+  originDescription      String
+  destinationDescription String
+  numberOfPassengers     Int?
+  chosenServiceProvider  RideServiceProvider?
+  chosenServiceTypeIndex Int?
+  snappPrices            SnappRide[]
+  tapsiPrices            TapsiRide[]
+  maximPrices            MaximRide[]
+  Status                 RideStatus?          @default(NOT_INITIATED)
+  commission             Int?                 
+}
+
+enum RideStatus {
+  FINDING_DRIVER
+  ACCEPTED
+  CANCELLED
+  NOT_FOUND
+  NOT_INITIATED
+}
+
+enum RideServiceProvider {
+  SNAPP
+  TAPSI
+  MAXIM
+}
+
+model SnappRide {
+  id          String  @id
+  serviceType String
+  Rider       Rider[]
+  price       Int
+  Ride        Ride?   @relation(fields: [rideId], references: [id])
+  rideId      String
+}
+
+model MaximRide {
+  id          String  @id
+  serviceType String
+  price       Int
+  Rider       Rider[]
+  Ride        Ride?   @relation(fields: [rideId], references: [id])
+  rideId      String
+}
+
+model TapsiRide {
+  id           String  @id
+  serviceType  String
+  categoryType String
+  token        String
+  price        Int
+  Rider        Rider[]
+  Ride         Ride    @relation(fields: [rideId], references: [id])
+  rideId       String
+}
+
+model Rider {
+  id          String     @id @default(uuid())
+  name        String
+  imageUrl    String?
+  phoneNumber String
+  Car         Car?
+  SnappRide   SnappRide  @relation(fields: [snappRideId], references: [id])
+  snappRideId String
+  TapsiRide   TapsiRide? @relation(fields: [tapsiRideId], references: [id])
+  tapsiRideId String?
+  MaximRide   MaximRide? @relation(fields: [maximRideId], references: [id])
+  maximRideId String?
+}
+
+model Car {
+  id                String  @id @default(uuid())
+  platePartA        Int
+  platePartB        Int
+  plateCcharacter   String
+  plateProvinceCode Int
+  plateImageUrl     String?
+  color             String
+  model             String
+  Rider             Rider   @relation(fields: [riderId], references: [id])
+  riderId           String  @unique
 }
 
 enum role {
