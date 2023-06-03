@@ -301,7 +301,7 @@ export async function updateRideController({
     } catch (error) {
       console.log(error)
       return new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
+        code: "INTERNAL_SERVER_ERROR", 
         message: "error while updating trip info",
       });
     }

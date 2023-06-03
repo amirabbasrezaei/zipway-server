@@ -9,7 +9,7 @@
 
 */
 -- AlterEnum
-ALTER TYPE "RideStatus" ADD VALUE 'NOT_INITIATED';
+ALTER TYPE "RideStatus" ADD VALUE 'NOT_INITIATED'; 
 
 -- DropIndex
 DROP INDEX "MaximRide_rideId_key";
