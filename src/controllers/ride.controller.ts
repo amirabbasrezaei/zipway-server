@@ -63,13 +63,8 @@ export async function requestNewRideController({
     return { result: "OK", data: { rideId: createdRide.id, showPrices: true } };
   } catch (error) {
     console.log(error);
-    return new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "problem while creating ride"
-    })
+    return { result: "FAILED" };
   }
-
-  return { result: "FAILED" };
 }
 
 //// *** ////
