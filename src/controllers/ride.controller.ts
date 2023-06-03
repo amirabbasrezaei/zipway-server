@@ -12,8 +12,13 @@ export const requestRideControllerArgsSchema = z.object({
 });
 
 export const requestNewRidePayloadSchema = z.object({
-  rideId: z.string(),
-  showPrices: z.boolean(),
+  data: z
+    .object({
+      rideId: z.string(),
+      showPrices: z.boolean(),
+    })
+    .optional(),
+  result: z.enum(["OK", "FAILED"]),
 });
 
 export type RequestNewRideControllerArgs = z.infer<
@@ -41,22 +46,26 @@ export async function requestNewRideController({
       message: "کاربر وجود ندارد",
     });
   }
-
-  const createdRide = await prisma.ride.create({
-    data: {
-      destinationDescription: input.destinationDescription,
-      originDescription: input.originDescription,
-      originCoordinate: input.originCoordinate,
-      destinationCoordinates: input.destinationCoordinates,
-      passenger: {
-        connect: {
-          id: findUser.id,
+  try {
+    const createdRide = await prisma.ride.create({
+      data: {
+        destinationDescription: input.destinationDescription,
+        originDescription: input.originDescription,
+        originCoordinate: input.originCoordinate,
+        destinationCoordinates: input.destinationCoordinates,
+        passenger: {
+          connect: {
+            id: findUser.id,
+          },
         },
       },
-    },
-  });
+    });
+    return { result: "OK", data: { rideId: createdRide.id, showPrices: true } };
+  } catch (error) {
+    console.log(error);
+  }
 
-  return { rideId: createdRide.id, showPrices: true };
+  return { result: "FAILED" };
 }
 
 //// *** ////
@@ -246,7 +255,7 @@ export async function updateRideController({
       });
     }
   }
-  if (input.status == "NOT_FOUND"){
+  if (input.status == "NOT_FOUND") {
     try {
       await prisma.ride.update({
         where: {
@@ -278,7 +287,7 @@ export async function updateRideController({
         },
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "error while applying commission",
@@ -299,9 +308,9 @@ export async function updateRideController({
         },
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return new TRPCError({
-        code: "INTERNAL_SERVER_ERROR", 
+        code: "INTERNAL_SERVER_ERROR",
         message: "error while updating trip info",
       });
     }
