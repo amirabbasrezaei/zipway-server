@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon src/server.ts",
     "build": "npx prisma generate",
-    "start": "npx prisma migrate resolve --rolled-back '20230603112254_fix' && npx prisma migrate resolve --rolled-back '20230603114030_fix' &&  npx prisma migrate deploy && ts-node src/server.ts"
+    "start": "npx prisma migrate resolve --applied '20230603112254_fix' && npx prisma migrate deploy && ts-node src/server.ts"
   },
   "dependencies": {
     "@prisma/client": "^4.14.1",
