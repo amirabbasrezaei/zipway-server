@@ -1,5 +1,3 @@
--- CreateEnum
-CREATE TYPE "RideStatus" AS ENUM ('FINDING_DRIVER', 'ACCEPTED', 'CANCELLED', 'NOT_FOUND', 'NOT_INITIATED');
 
 -- CreateEnum
 CREATE TYPE "RideServiceProvider" AS ENUM ('SNAPP', 'TAPSI', 'MAXIM');
