@@ -16,3 +16,4 @@ export const rideRouter = router({
     .mutation(updateRideController),
   getRides: publicProcedure.query(userRidesController),
 });
+

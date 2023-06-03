@@ -84,7 +84,7 @@ model SnappRide {
   Rider       Rider[]
   price       Int
   Ride        Ride?   @relation(fields: [rideId], references: [id])
-  rideId      String
+  rideId      String 
 }
 
 model MaximRide {
