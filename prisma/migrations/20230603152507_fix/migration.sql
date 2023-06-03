@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "RideStatus" ADD VALUE 'NOT_INITIATED';
