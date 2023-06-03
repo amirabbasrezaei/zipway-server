@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "RideStatus" AS ENUM ('FINDING_DRIVER', 'ACCEPTED', 'CANCELLED', 'NOT_FOUND');
+CREATE TYPE "RideStatus" AS ENUM ('FINDING_DRIVER', 'ACCEPTED', 'CANCELLED', 'NOT_FOUND', 'NOT_INITIATED');
 
 -- CreateEnum
 CREATE TYPE "RideServiceProvider" AS ENUM ('SNAPP', 'TAPSI', 'MAXIM');
@@ -7,20 +7,18 @@ CREATE TYPE "RideServiceProvider" AS ENUM ('SNAPP', 'TAPSI', 'MAXIM');
 -- CreateTable
 CREATE TABLE "Ride" (
     "id" TEXT NOT NULL,
-    "originCoordinate" TEXT[],
-    "destinationCoordinate" TEXT[],
-    "price" INTEGER NOT NULL,
+    "originCoordinate" INTEGER[],
+    "destinationCoordinates" INTEGER[],
+    "finalPrice" INTEGER,
     "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "finishDate" TIMESTAMP(3),
     "originDescription" TEXT NOT NULL,
     "destinationDescription" TEXT NOT NULL,
-    "numberOfPassengers" INTEGER NOT NULL,
-    "chosenServiceProvider" "RideServiceProvider" NOT NULL,
-    "snappPrice" INTEGER,
-    "tapsiPrice" INTEGER,
-    "maximPrice" INTEGER,
+    "numberOfPassengers" INTEGER,
+    "chosenServiceProvider" "RideServiceProvider",
+    "chosenServiceTypeIndex" INTEGER,
     "Status" "RideStatus" NOT NULL,
-    "commission" INTEGER NOT NULL,
+    "commission" INTEGER,
 
     CONSTRAINT "Ride_pkey" PRIMARY KEY ("id")
 );
@@ -29,9 +27,20 @@ CREATE TABLE "Ride" (
 CREATE TABLE "SnappRide" (
     "id" TEXT NOT NULL,
     "serviceType" TEXT NOT NULL,
+    "price" INTEGER NOT NULL,
     "rideId" TEXT NOT NULL,
 
     CONSTRAINT "SnappRide_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MaximRide" (
+    "id" TEXT NOT NULL,
+    "serviceType" TEXT NOT NULL,
+    "price" INTEGER NOT NULL,
+    "rideId" TEXT NOT NULL,
+
+    CONSTRAINT "MaximRide_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -40,6 +49,7 @@ CREATE TABLE "TapsiRide" (
     "serviceType" TEXT NOT NULL,
     "categoryType" TEXT NOT NULL,
     "token" TEXT NOT NULL,
+    "price" INTEGER NOT NULL,
     "rideId" TEXT NOT NULL,
 
     CONSTRAINT "TapsiRide_pkey" PRIMARY KEY ("id")
@@ -53,6 +63,7 @@ CREATE TABLE "Rider" (
     "phoneNumber" TEXT NOT NULL,
     "snappRideId" TEXT NOT NULL,
     "tapsiRideId" TEXT,
+    "maximRideId" TEXT,
 
     CONSTRAINT "Rider_pkey" PRIMARY KEY ("id")
 );
@@ -79,12 +90,6 @@ CREATE TABLE "_RideToUser" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "SnappRide_rideId_key" ON "SnappRide"("rideId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "TapsiRide_rideId_key" ON "TapsiRide"("rideId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Car_riderId_key" ON "Car"("riderId");
 
 -- CreateIndex
@@ -97,6 +102,9 @@ CREATE INDEX "_RideToUser_B_index" ON "_RideToUser"("B");
 ALTER TABLE "SnappRide" ADD CONSTRAINT "SnappRide_rideId_fkey" FOREIGN KEY ("rideId") REFERENCES "Ride"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "MaximRide" ADD CONSTRAINT "MaximRide_rideId_fkey" FOREIGN KEY ("rideId") REFERENCES "Ride"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "TapsiRide" ADD CONSTRAINT "TapsiRide_rideId_fkey" FOREIGN KEY ("rideId") REFERENCES "Ride"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -104,6 +112,9 @@ ALTER TABLE "Rider" ADD CONSTRAINT "Rider_snappRideId_fkey" FOREIGN KEY ("snappR
 
 -- AddForeignKey
 ALTER TABLE "Rider" ADD CONSTRAINT "Rider_tapsiRideId_fkey" FOREIGN KEY ("tapsiRideId") REFERENCES "TapsiRide"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Rider" ADD CONSTRAINT "Rider_maximRideId_fkey" FOREIGN KEY ("maximRideId") REFERENCES "MaximRide"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Car" ADD CONSTRAINT "Car_riderId_fkey" FOREIGN KEY ("riderId") REFERENCES "Rider"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
