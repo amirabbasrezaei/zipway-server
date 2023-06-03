@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Ride" ALTER COLUMN "Status" DROP NOT NULL;

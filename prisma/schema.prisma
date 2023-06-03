@@ -60,7 +60,7 @@ model Ride {
   snappPrices            SnappRide[]
   tapsiPrices            TapsiRide[]
   maximPrices            MaximRide[]
-  Status                 RideStatus
+  Status                 RideStatus?
   commission             Int?
 }
 
