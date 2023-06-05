@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { RouterArgsController } from "./type";
 import { TRPCError } from "@trpc/server";
+import { Ride } from "prisma/prisma-client";
 
 //// createNewRide
 
@@ -30,9 +31,7 @@ export type RequestNewRideControllerPayload = z.infer<
 export async function requestNewRideController({
   input,
   ctx,
-}: RouterArgsController<RequestNewRideControllerArgs>): Promise<
-  RequestNewRideControllerPayload | TRPCError
-> {
+}: RouterArgsController<RequestNewRideControllerArgs>): Promise<RequestNewRideControllerPayload> {
   const { prisma } = ctx;
 
   const findUser = await prisma.user.findUnique({
@@ -41,11 +40,12 @@ export async function requestNewRideController({
     },
   });
   if (!findUser) {
-    return new TRPCError({
+    throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "کاربر وجود ندارد",
     });
   }
+
   try {
     const createdRide = await prisma.ride.create({
       data: {
@@ -146,9 +146,7 @@ export type UpdateRideControllerPayload = z.infer<
 export async function updateRideController({
   input,
   ctx,
-}: RouterArgsController<UpdateRideControllerArgs>): Promise<
-  UpdateRideControllerPayload | TRPCError
-> {
+}: RouterArgsController<UpdateRideControllerArgs>): Promise<UpdateRideControllerPayload> {
   const { prisma } = ctx;
 
   const findRide = await prisma.ride.findFirst({
@@ -164,7 +162,7 @@ export async function updateRideController({
     },
   });
   if (!findRide) {
-    return new TRPCError({
+    throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "سفری یافت نشد",
     });
@@ -191,7 +189,7 @@ export async function updateRideController({
         });
       } catch (error) {
         console.log(error);
-        return new TRPCError({
+        throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "خطا در افزودن قیمت سفر ها",
         });
@@ -211,7 +209,7 @@ export async function updateRideController({
         });
       } catch (error) {
         console.log(error);
-        return new TRPCError({
+        throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "خطا در افزودن قیمت سفر ها",
         });
@@ -229,7 +227,7 @@ export async function updateRideController({
         });
       } catch (error) {
         console.log(error);
-        return new TRPCError({
+        throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "خطا در افزودن قیمت سفر ها",
         });
@@ -248,7 +246,7 @@ export async function updateRideController({
       });
     } catch (error) {
       console.log(error);
-      return new TRPCError({
+      throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "error while update ride status",
       });
@@ -266,7 +264,7 @@ export async function updateRideController({
       });
     } catch (error) {
       console.log(error);
-      return new TRPCError({
+      throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "error while update ride status",
       });
@@ -287,7 +285,7 @@ export async function updateRideController({
       });
     } catch (error) {
       console.log(error);
-      return new TRPCError({
+      throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "error while applying commission",
       });
@@ -308,7 +306,7 @@ export async function updateRideController({
       });
     } catch (error) {
       console.log(error);
-      return new TRPCError({
+      throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "error while updating trip info",
       });
@@ -321,7 +319,9 @@ export async function updateRideController({
 //// *** ////
 
 //// get User Rides ////
-export async function userRidesController({ ctx }: RouterArgsController) {
+export async function userRidesController({
+  ctx,
+}: RouterArgsController): Promise<Ride[]> {
   const { prisma } = ctx;
   return await prisma.ride.findMany({
     where: {
