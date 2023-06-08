@@ -45,12 +45,12 @@ model Payment {
 }
 
 model Ride {
-  id                     String               @id @default(uuid())
-  originCoordinate       Int[]
-  destinationCoordinates Int[]
+  id                     String                  @id @default(uuid())
+  originCoordinate       Float[]
+  destinationCoordiante  DestinationCoordinate[]
   passenger              User[]
   finalPrice             Int?
-  createdDate            DateTime             @default(now())
+  createdDate            DateTime                @default(now())
   finishDate             DateTime?
   originDescription      String
   destinationDescription String
@@ -62,6 +62,13 @@ model Ride {
   maximPrices            MaximRide[]
   Status                 RideStatus?
   commission             Int?
+}
+
+model DestinationCoordinate {
+  ride      Ride    @relation(fields: [rideId], references: [id])
+  rideId    String  @id
+  latitude  Decimal
+  longitude Decimal
 }
 
 enum RideStatus {
@@ -84,7 +91,7 @@ model SnappRide {
   Rider       Rider[]
   price       Int
   Ride        Ride?   @relation(fields: [rideId], references: [id])
-  rideId      String 
+  rideId      String
 }
 
 model MaximRide {

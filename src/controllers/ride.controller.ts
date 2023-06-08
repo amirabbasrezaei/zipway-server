@@ -7,7 +7,7 @@ import { Ride } from "prisma/prisma-client";
 
 export const requestRideControllerArgsSchema = z.object({
   originCoordinate: z.number().array(),
-  destinationCoordinates: z.number().array(),
+  destinationCoordinates: z.number().array().array(),
   destinationDescription: z.string(),
   originDescription: z.string(),
 });
@@ -44,6 +44,7 @@ export async function requestNewRideController({
       code: "INTERNAL_SERVER_ERROR",
       message: "کاربر وجود ندارد",
     });
+    return { result: "FAILED" };
   }
 
   try {
