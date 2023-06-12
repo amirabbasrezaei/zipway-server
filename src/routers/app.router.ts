@@ -1,4 +1,5 @@
 import {
+  ZipwayConfigPayloadSchema,
   appLogsController,
   appLogsControllerSchema,
   coordinateToAddressController,
@@ -12,7 +13,7 @@ import { router, userProtectedProcedure, publicProcedure } from "../trpc";
 
 export const zipwayAppRouter = router({
   zipwayConfig: userProtectedProcedure
-    .input(zipwayConfigSchema)
+    .input(zipwayConfigSchema).output(ZipwayConfigPayloadSchema)
     .query(zipwayConfigController),
   coordinateToAddress: userProtectedProcedure
     .input(coordinateToAddressSchema)

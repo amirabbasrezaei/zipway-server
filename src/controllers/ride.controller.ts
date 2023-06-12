@@ -2,12 +2,21 @@ import { z } from "zod";
 import { RouterArgsController } from "./type";
 import { TRPCError } from "@trpc/server";
 import { Ride } from "prisma/prisma-client";
+import {
+  getCommission,
+  getCommissionPayloadSchema,
+} from "../helper/ride.helper";
 
 //// createNewRide
 
+const DestinattionCoordinateSchema = z.object({
+  latitude: z.number(),
+  longitude: z.number(),
+});
+
 export const requestRideControllerArgsSchema = z.object({
-  originCoordinate: z.number().array(),
-  destinationCoordinates: z.number().array().array(),
+  originCoordinate: DestinattionCoordinateSchema,
+  destinationCoordinates: DestinattionCoordinateSchema.array(),
   destinationDescription: z.string(),
   originDescription: z.string(),
 });
@@ -32,11 +41,11 @@ export async function requestNewRideController({
   input,
   ctx,
 }: RouterArgsController<RequestNewRideControllerArgs>): Promise<RequestNewRideControllerPayload> {
-  const { prisma } = ctx;
+  const { prisma, user } = ctx;
 
   const findUser = await prisma.user.findUnique({
     where: {
-      id: "sfhbdgncb",
+      id: user.userId,
     },
   });
   if (!findUser) {
@@ -44,16 +53,43 @@ export async function requestNewRideController({
       code: "INTERNAL_SERVER_ERROR",
       message: "کاربر وجود ندارد",
     });
-    return { result: "FAILED" };
   }
 
   try {
+    // const findEmptyRide = await prisma.ride.findFirst({
+    //   where: {
+    //     Status: "NOT_INITIATED",
+    //     passenger: { every: { id: user.userId } },
+    //   },
+    // });
+    // if (findEmptyRide) {
+    //   await prisma.ride.update({
+    //     where: { id: findEmptyRide.id },
+    //     data: {
+    //       createdDate: new Date(Date.now()),
+    //     },
+    //   });
+    //   return {
+    //     result: "OK",
+    //     data: { rideId: findEmptyRide.id, showPrices: true },
+    //   };
+    // }
     const createdRide = await prisma.ride.create({
       data: {
         destinationDescription: input.destinationDescription,
         originDescription: input.originDescription,
-        originCoordinate: input.originCoordinate,
-        destinationCoordinates: input.destinationCoordinates,
+        originCoordinate: [
+          input.originCoordinate.longitude,
+          input.originCoordinate.latitude,
+        ],
+        destinationCoordiante: {
+          createMany: {
+            data: input.destinationCoordinates.map((coordinate) => ({
+              latitude: coordinate.latitude,
+              longitude: coordinate.longitude,
+            })),
+          },
+        },
         passenger: {
           connect: {
             id: findUser.id,
@@ -82,12 +118,12 @@ const RideStatusSchema = z.enum([
 const rideProviderSchema = z.enum(["SNAPP", "TAPSI", "MAXIM"]);
 
 const ServiceProviderSchema = z.object({
-  tripId: z.string(),
+  tripId: z.string().optional(),
   type: z.string(),
   price: z.number(),
 });
 const TapsiProviderSchema = z.object({
-  tripId: z.string(),
+  tripId: z.string().optional(),
   type: z.string(),
   price: z.number(),
   tripToken: z.string(),
@@ -123,11 +159,11 @@ export const updateRideControllerArgsSchema = z.object({
       provider: rideProviderSchema,
       type: z.string(),
       accepted: z.boolean(),
-      tripId: z.string(),
-      driverInfo: DriverTypeSchema,
+      tripId: z.string().optional(),
+      driverInfo: DriverTypeSchema.optional(),
       price: z.number(),
       categoryType: z.string().optional(),
-      numberOfPassengers: z.number(),
+      numberOfPassengers: z.number().optional(),
     })
     .optional(),
 });
@@ -135,6 +171,8 @@ export const updateRideControllerArgsSchema = z.object({
 export const updateRidePayloadSchema = z.object({
   rideId: z.string(),
   result: z.enum(["OK", "FAILED"]),
+  commission: getCommissionPayloadSchema.optional(),
+  message: z.string().optional(),
 });
 
 export type UpdateRideControllerArgs = z.infer<
@@ -148,7 +186,7 @@ export async function updateRideController({
   input,
   ctx,
 }: RouterArgsController<UpdateRideControllerArgs>): Promise<UpdateRideControllerPayload> {
-  const { prisma } = ctx;
+  const { prisma, user } = ctx;
 
   const findRide = await prisma.ride.findFirst({
     where: {
@@ -156,7 +194,7 @@ export async function updateRideController({
       AND: {
         passenger: {
           every: {
-            id: "sfhbdgncb",
+            id: user.userId,
           },
         },
       },
@@ -180,14 +218,25 @@ export async function updateRideController({
     });
     if (input.snappPrices?.length) {
       try {
-        await prisma.snappRide.createMany({
-          data: input.snappPrices.map((service) => ({
-            serviceType: service.type,
-            price: service.price,
-            id: service.tripId,
-            rideId: input.rideId,
-          })),
-        });
+        await prisma.$transaction([
+          prisma.snappRide.deleteMany({
+            where: {
+              rideId: findRide.id,
+            },
+          }),
+          prisma.snappRide.createMany({
+            data: input.snappPrices.map((service) => ({
+              serviceType: service.type,
+              price: service.price,
+              rideId: findRide.id,
+            })),
+          }),
+        ]);
+        return {
+          result: "OK",
+          rideId: findRide.id,
+          commission: await getCommission({ prisma, rideId: findRide.id }),
+        };
       } catch (error) {
         console.log(error);
         throw new TRPCError({
@@ -197,17 +246,31 @@ export async function updateRideController({
       }
     }
     if (input.tapsiPrices?.length) {
+      console.log(input.tapsiPrices[0].tripId);
       try {
-        await prisma.tapsiRide.createMany({
-          data: input.tapsiPrices.map((service) => ({
-            serviceType: service.type,
-            price: service.price,
-            categoryType: service.categoryType,
-            id: service.tripId,
-            rideId: input.rideId,
-            token: service.tripToken,
-          })),
-        });
+        await prisma.$transaction([
+          prisma.tapsiRide.deleteMany({
+            where: {
+              rideId: findRide.id,
+            },
+          }),
+          prisma.tapsiRide.createMany({
+            data: input.tapsiPrices.map((service) => ({
+              serviceType: service.type,
+              price: service.price,
+              categoryType: service.categoryType,
+              // id: `${service.tripId}_${service.categoryType}_${service.type}`,
+              rideId: findRide.id,
+              token: service.tripToken,
+            })),
+          }),
+        ]);
+
+        return {
+          result: "OK",
+          rideId: findRide.id,
+          commission: await getCommission({ prisma, rideId: findRide.id }),
+        };
       } catch (error) {
         console.log(error);
         throw new TRPCError({
@@ -222,10 +285,16 @@ export async function updateRideController({
           data: input.maximPrices.map((service) => ({
             serviceType: service.type,
             price: service.price,
-            id: service.tripId,
+            id: `${service.tripId}_${service.type}`,
             rideId: input.rideId,
+            maximRideId: service.tripId,
           })),
         });
+        return {
+          result: "OK",
+          rideId: findRide.id,
+          commission: await getCommission({ prisma, rideId: findRide.id }),
+        };
       } catch (error) {
         console.log(error);
         throw new TRPCError({
@@ -234,8 +303,23 @@ export async function updateRideController({
         });
       }
     }
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "require at least one of services price",
+    });
   }
   if (input.status == "FINDING_DRIVER") {
+    const user_credit = await prisma.user.findUnique({
+      where: { id: user.userId },
+      select: { credit: true },
+    });
+    if (user_credit && user_credit?.credit < Number(process.env.COMMISSION)) {
+      return {
+        result: "FAILED",
+        rideId: findRide.id,
+        message: "اعتبار کافی نیست",
+      };
+    }
     try {
       await prisma.ride.update({
         where: {
@@ -243,8 +327,82 @@ export async function updateRideController({
         },
         data: {
           Status: input.status,
+          chosenServiceProvider: input.trip?.provider,
+          numberOfPassengers: input.trip?.numberOfPassengers,
         },
       });
+      if (input.trip?.provider == "SNAPP") {
+        const chosenService = await prisma.snappRide.findFirst({
+          where: {
+            serviceType: input.trip.type,
+
+            AND: {
+              rideId: findRide.id,
+            },
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        await prisma.snappRide.update({
+          where: {
+            id: chosenService?.id,
+          },
+          data: {
+            isChosen: true,
+          },
+        });
+
+        return {
+          result: "OK",
+          rideId: findRide.id,
+        };
+      }
+      if (input.trip?.provider == "TAPSI") {
+        console.log(input.trip.type, input.trip.categoryType);
+
+        const chosenService = await prisma.tapsiRide.findFirst({
+          where: {
+            serviceType: input.trip.type,
+            categoryType: input.trip.categoryType,
+            AND: {
+              rideId: findRide.id,
+            },
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        await prisma.tapsiRide.update({
+          where: {
+            id: chosenService?.id,
+          },
+          data: {
+            isChosen: true,
+          },
+        });
+        return {
+          result: "OK",
+          rideId: findRide.id,
+        };
+      }
+      if (input.trip?.provider == "MAXIM") {
+        await prisma.maximRide.update({
+          where: {
+            id: `${input.trip.tripId}_${input.trip.type}`,
+          },
+          data: {
+            isChosen: true,
+          },
+        });
+
+        return {
+          result: "OK",
+          rideId: findRide.id,
+        };
+      }
     } catch (error) {
       console.log(error);
       throw new TRPCError({
@@ -263,6 +421,10 @@ export async function updateRideController({
           Status: input.status,
         },
       });
+      return {
+        result: "OK",
+        rideId: findRide.id,
+      };
     } catch (error) {
       console.log(error);
       throw new TRPCError({
@@ -276,7 +438,7 @@ export async function updateRideController({
     try {
       await prisma.user.update({
         where: {
-          id: "sfhbdgncb",
+          id: user.userId,
         },
         data: {
           credit: {
@@ -305,6 +467,10 @@ export async function updateRideController({
           commission: Number(process.env.COMMISSION),
         },
       });
+      return {
+        result: "OK",
+        rideId: findRide.id,
+      };
     } catch (error) {
       console.log(error);
       throw new TRPCError({
@@ -314,7 +480,10 @@ export async function updateRideController({
     }
   }
 
-  return { result: "OK", rideId: input.rideId };
+  return {
+    result: "OK",
+    rideId: findRide.id,
+  };
 }
 
 //// *** ////
@@ -323,12 +492,12 @@ export async function updateRideController({
 export async function userRidesController({
   ctx,
 }: RouterArgsController): Promise<Ride[]> {
-  const { prisma } = ctx;
+  const { prisma, user } = ctx;
   return await prisma.ride.findMany({
     where: {
       passenger: {
         every: {
-          id: "sfhbdgncb",
+          id: user.userId,
         },
       },
     },

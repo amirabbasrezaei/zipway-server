@@ -56,7 +56,6 @@ model Ride {
   destinationDescription String
   numberOfPassengers     Int?
   chosenServiceProvider  RideServiceProvider?
-  chosenServiceTypeIndex Int?
   snappPrices            SnappRide[]
   tapsiPrices            TapsiRide[]
   maximPrices            MaximRide[]
@@ -86,25 +85,30 @@ enum RideServiceProvider {
 }
 
 model SnappRide {
-  id          String  @id
+  id          String  @id @default(uuid())
+  snappRideId String?
   serviceType String
   Rider       Rider[]
   price       Int
   Ride        Ride?   @relation(fields: [rideId], references: [id])
   rideId      String
+  isChosen    Boolean? @default(false)
 }
 
 model MaximRide {
-  id          String  @id
+  id          String  @id @default(uuid())
+  maximRideId String?
   serviceType String
   price       Int
   Rider       Rider[]
   Ride        Ride?   @relation(fields: [rideId], references: [id])
   rideId      String
+  isChosen    Boolean? @default(false)
 }
 
 model TapsiRide {
-  id           String  @id
+  id           String  @id @default(uuid())
+  tapsiRideId  String?
   serviceType  String
   categoryType String
   token        String
@@ -112,6 +116,7 @@ model TapsiRide {
   Rider        Rider[]
   Ride         Ride    @relation(fields: [rideId], references: [id])
   rideId       String
+  isChosen     Boolean?  
 }
 
 model Rider {
@@ -120,12 +125,12 @@ model Rider {
   imageUrl    String?
   phoneNumber String
   Car         Car?
-  SnappRide   SnappRide  @relation(fields: [snappRideId], references: [id])
-  snappRideId String
-  TapsiRide   TapsiRide? @relation(fields: [tapsiRideId], references: [id])
-  tapsiRideId String?
+  SnappRide   SnappRide? @relation(fields: [snappRideId], references: [id])
+  snappRideId String?
   MaximRide   MaximRide? @relation(fields: [maximRideId], references: [id])
   maximRideId String?
+  TapsiRide   TapsiRide? @relation(fields: [tapsiRideId], references: [id])
+  tapsiRideId String?
 }
 
 model Car {

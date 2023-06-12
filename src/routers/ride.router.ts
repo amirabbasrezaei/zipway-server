@@ -4,18 +4,18 @@ import {
   requestRideControllerArgsSchema,
   updateRideController,
   updateRideControllerArgsSchema,
-  updateRidePayloadSchema,
+  // updateRidePayloadSchema,
   userRidesController,
 } from "../controllers/ride.controller";
-import { publicProcedure, router } from "../trpc";
+import { router, userProtectedProcedure } from "../trpc";
 
 export const rideRouter = router({
-  requestRide: publicProcedure
+  requestRide: userProtectedProcedure
     .input(requestRideControllerArgsSchema).output(requestNewRidePayloadSchema)
     .mutation(requestNewRideController),
-  updateRide: publicProcedure
-    .input(updateRideControllerArgsSchema).output(updateRidePayloadSchema)
+  updateRide: userProtectedProcedure
+    .input(updateRideControllerArgsSchema)
     .mutation(updateRideController),
-  getRides: publicProcedure.query(userRidesController),
+  getRides: userProtectedProcedure.query(userRidesController),
 });
 

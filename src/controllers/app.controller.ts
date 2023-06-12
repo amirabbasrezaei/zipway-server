@@ -7,6 +7,7 @@ import {
   coordinateToAddressRequest,
   placeBaseSearchRequest,
 } from "../requests/neshanAPIs";
+import { TRPCError } from "@trpc/server";
 
 type AppRouterArgsController<T = null> = T extends null
   ? {
@@ -25,41 +26,48 @@ export const zipwayConfigSchema = z.object({
 });
 export type ZipwayConfig = z.infer<typeof zipwayConfigSchema>;
 
-type BannerType = {
-  message: string;
-  canClose: boolean;
-  image: {
-    url: string;
-    height: number;
-    width: number;
-  } | null;
-  bottomImage: {
-    url: string;
-    height: number;
-    width: number;
-  } | null;
-};
+const BannerType = z.object({
+  message: z.string(),
+  canClose: z.boolean(),
+  image: z
+    .object({
+      url: z.string(),
+      height: z.number(),
+      width: z.number(),
+    })
+    .optional(),
+  bottomImage: z
+    .object({
+      url: z.string(),
+      height: z.number(),
+      width: z.number(),
+    })
+    .optional(),
+});
 
+export const ZipwayConfigPayloadSchema = z.object({
+  mapStyles: z.any(),
+  banner: BannerType.optional(),
+  userInfo: z.object({
+    name: z.string(),
+    credit: z.number(),
+    phoneNumber: z.string(),
+  }),
+  appInfo: z.object({
+    rideWaitingText: z.string(),
+    rideWaitingImageUrl: z.string(),
+    privacyPolicyText: z.string(),
+    createPaymentText: z.string(),
+    minCreatePayment: z.number(),
+    maxCreatePayment: z.number(),
+    logoutAppText: z.string(),
+    notEnoughCredit: z.object({
+      requestServiceButton: z.string(),
+    }),
+  }),
+});
 
-
-type ZipwayConfigPayload = {
-  mapStyles: any | null;
-  banner: BannerType | null;
-  userInfo: {
-    name: string;
-    credit: number;
-    phoneNumber: string
-  } ;
-  appInfo: {
-    rideWaitingText: string;
-    rideWaitingImageUrl: string;
-    privacyPolicyText: string;
-    createPaymentText: string;
-    minCreatePayment: number;
-    maxCreatePayment: number;
-    logoutAppText: string;
-  }
-} | null;
+export type ZipwayConfigPayload = z.infer<typeof ZipwayConfigPayloadSchema>;
 
 export async function zipwayConfigController({
   ctx,
@@ -68,7 +76,7 @@ export async function zipwayConfigController({
   const response = await axios.get(
     "https://tile.maps.snapp.ir/styles/snapp-style/style.json"
   );
-  const findUser  = await prisma.user.findUnique({
+  const findUser = await prisma.user.findUnique({
     where: {
       id: user.userId,
     },
@@ -86,23 +94,32 @@ export async function zipwayConfigController({
   //   bottomImage: null
   // };
   if (!findUser) {
-    return null;
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "user doesn't exist",
+    });
   }
-  return { mapStyles: response.data, banner: null,userInfo: {
-    name: findUser.name,
-    credit: findUser.credit / 10,
-    phoneNumber: findUser.phoneNumber,
-
-  },appInfo:{
-    createPaymentText: "حداقل مبلغ مورد نیاز برای افزایش اعتبار حساب ۲۰۰۰۰ تومان می باشد.",
-    logoutAppText: "؟آیا برای خروج از حساب کاربری خود مطمئنید",
-    maxCreatePayment: 50000000,
-    minCreatePayment: 20000,
-    privacyPolicyText: "",
-    rideWaitingImageUrl: "",
-    rideWaitingText: "در حال یافتن تاکسی برای شما هستیم"
-  } };
-
+  return {
+    mapStyles: response.data,
+    userInfo: {
+      name: findUser.name,
+      credit: findUser.credit / 10,
+      phoneNumber: findUser.phoneNumber,
+    },
+    appInfo: {
+      createPaymentText:
+        "حداقل مبلغ مورد نیاز برای افزایش اعتبار حساب ۲۰۰۰۰ تومان می باشد.",
+      logoutAppText: "؟آیا برای خروج از حساب کاربری خود مطمئنید",
+      maxCreatePayment: 50000000,
+      minCreatePayment: 10000,
+      privacyPolicyText: "",
+      rideWaitingImageUrl: "",
+      rideWaitingText: "در حال یافتن تاکسی برای شما هستیم",
+      notEnoughCredit: {
+        requestServiceButton: "اعتبار شما برای درخواست سرویس کافی نیست",
+      },
+    },
+  };
 }
 
 export const coordinateToAddressSchema = z.object({
