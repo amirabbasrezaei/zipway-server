@@ -8,6 +8,7 @@ import {
   placeBaseSearchRequest,
 } from "../requests/neshanAPIs";
 import { TRPCError } from "@trpc/server";
+import path from "path";
 
 type AppRouterArgsController<T = null> = T extends null
   ? {
@@ -54,8 +55,15 @@ export const ZipwayConfigPayloadSchema = z.object({
     phoneNumber: z.string(),
   }),
   appInfo: z.object({
-    rideWaitingText: z.string(),
-    rideWaitingImageUrl: z.string(),
+    rideWaiting: z.object({
+      image: z.object({
+        url: z.string(),
+        width: z.number(),
+        height: z.number(),
+        borderRadius: z.number(),
+      }),
+      rideWaitingText: z.string(),
+    }),
     privacyPolicyText: z.string(),
     createPaymentText: z.string(),
     minCreatePayment: z.number(),
@@ -72,7 +80,7 @@ export type ZipwayConfigPayload = z.infer<typeof ZipwayConfigPayloadSchema>;
 export async function zipwayConfigController({
   ctx,
 }: AppRouterArgsController<ZipwayConfig>): Promise<ZipwayConfigPayload> {
-  const { user, prisma } = ctx;
+  const { user, prisma, req } = ctx;
   const response = await axios.get(
     "https://tile.maps.snapp.ir/styles/snapp-style/style.json"
   );
@@ -113,8 +121,19 @@ export async function zipwayConfigController({
       maxCreatePayment: 50000000,
       minCreatePayment: 10000,
       privacyPolicyText: "",
-      rideWaitingImageUrl: "",
-      rideWaitingText: "در حال یافتن تاکسی برای شما هستیم",
+      rideWaiting: {
+        image: {
+          url: path.join(
+            `${req.protocol + "://" + req.get("host")}`,
+            "static",
+            "/ride_waiting.gif"
+          ),
+          height: 250,
+          width: 350,
+          borderRadius: 15,
+        },
+        rideWaitingText: "در حال یافتن تاکسی برای شما هستیم",
+      },
       notEnoughCredit: {
         requestServiceButton: "اعتبار شما برای درخواست سرویس کافی نیست",
       },

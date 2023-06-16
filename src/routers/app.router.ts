@@ -1,3 +1,4 @@
+import path from "path";
 import {
   ZipwayConfigPayloadSchema,
   appLogsController,
@@ -13,7 +14,8 @@ import { router, userProtectedProcedure, publicProcedure } from "../trpc";
 
 export const zipwayAppRouter = router({
   zipwayConfig: userProtectedProcedure
-    .input(zipwayConfigSchema).output(ZipwayConfigPayloadSchema)
+    .input(zipwayConfigSchema)
+    .output(ZipwayConfigPayloadSchema)
     .query(zipwayConfigController),
   coordinateToAddress: userProtectedProcedure
     .input(coordinateToAddressSchema)
@@ -24,4 +26,12 @@ export const zipwayAppRouter = router({
   log: publicProcedure
     .input(appLogsControllerSchema)
     .mutation(appLogsController),
+  test: publicProcedure.query(async ({ ctx }) => {
+    const { req } = ctx;
+    return path.join(
+      `${req.protocol + "://" + req.get("host")}`,
+      "static",
+      "/ride_waiting.gif"
+    );
+  }),
 });

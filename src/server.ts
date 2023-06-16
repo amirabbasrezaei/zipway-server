@@ -5,12 +5,14 @@ import { createContext } from "./context";
 import { appRouter } from "./routers/_app";
 import cookieparser from "cookie-parser";
 import cors from "cors";
-import { renderTrpcPanel } from "trpc-panel";
+import path from "path";
+
 dotenv.config();
 
 const app = express();
 app.use(cors({ credentials: false, origin: "*" }));
 app.use(cookieparser());
+
 app.use(
   "/trpc",
   trpcExpress.createExpressMiddleware({
@@ -18,11 +20,12 @@ app.use(
     createContext,
   })
 );
-app.use("/panel", (_, res) => {
-  return res.send(
-    renderTrpcPanel(appRouter, { url: "http://localhost:5000/trpc" })
-  );
-});
+app.use('/static', express.static(path.join(__dirname, 'public')))
+// app.use("/panel", (_, res) => {
+//   return res.send(
+//     renderTrpcPanel(appRouter, { url: "http://localhost:5000/trpc" })
+//   );
+// });
 
 const port = process.env.PORT || 3000;
 
