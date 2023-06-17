@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const BASE_URL = "https://api.neshan.org";
-const NESHAN_API_KEY = "service.026843c0037a47f1a34bea06cab8e350";
+const HEADERS = { headers: { "Api-Key": process.env.NESHAN_API_KEY } };
 
 export interface PlaceBaseSearchRequestArgs {
   searchTerm: string;
@@ -57,7 +57,7 @@ export async function placeBaseSearchRequest({
 }: PlaceBaseSearchRequestArgs): Promise<PlaceBaseSearchRequestPayload> {
   const response = await axios.get(
     `${BASE_URL}/v1/search?term=${searchTerm}&lat=${latitude}&lng=${longitude}`,
-    { headers: { "Api-Key": NESHAN_API_KEY } }
+    HEADERS
   );
   return response.data;
 }
@@ -70,9 +70,8 @@ export async function coordinateToAddressRequest({
     `${BASE_URL}/v5/reverse?lat=${JSON.stringify(
       latitude
     )}&lng=${JSON.stringify(longitude)}`,
-    { headers: { "Api-Key": NESHAN_API_KEY } }
+    HEADERS
   );
 
-  
   return response.data;
 }
