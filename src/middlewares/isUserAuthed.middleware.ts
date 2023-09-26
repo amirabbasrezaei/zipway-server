@@ -25,3 +25,5 @@ export const isUserAuthed = async ({ ctx, next }: IsUserAuthed) => {
     ctx: { ...ctx, user: accessTokenPayload ? accessTokenPayload :  accessToken},
   });
 };
+
+
