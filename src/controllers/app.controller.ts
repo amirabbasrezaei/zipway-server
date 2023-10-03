@@ -77,6 +77,7 @@ export const ZipwayConfigPayloadSchema = z.object({
 
 export type ZipwayConfigPayload = z.infer<typeof ZipwayConfigPayloadSchema>;
 
+
 export async function zipwayConfigController({
   ctx,
 }: AppRouterArgsController<ZipwayConfig>): Promise<ZipwayConfigPayload> {
