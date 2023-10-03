@@ -82,7 +82,7 @@ export async function zipwayConfigController({
 }: AppRouterArgsController<ZipwayConfig>): Promise<ZipwayConfigPayload> {
   const { user, prisma, req } = ctx;
   const response = await axios.get(
-    "https://tile.maps.snapp.ir/styles/snapp-style/style.json"
+    process.env.SNAPP_TILE_MAP_JSON_URL as string
   );
   const findUser = await prisma.user.findUnique({
     where: {
