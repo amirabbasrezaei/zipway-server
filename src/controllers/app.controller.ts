@@ -27,7 +27,6 @@ export const zipwayConfigSchema = z.object({
 });
 export type ZipwayConfig = z.infer<typeof zipwayConfigSchema>;
 
-
 const BannerType = z.object({
   message: z.string(),
   canClose: z.boolean(),
