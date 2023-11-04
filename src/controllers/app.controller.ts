@@ -125,11 +125,7 @@ export async function zipwayConfigController({
       privacyPolicyText: "",
       rideWaiting: {
         image: {
-          url: path.join(
-            `${req.protocol + "://" + req.get("host")}`,
-            "static",
-            "/ride_waiting.gif"
-          ),
+          url:`https://zipway.storage.iran.liara.space/giphy.gif`,
           height: 250,
           width: 350,
           borderRadius: 15,
