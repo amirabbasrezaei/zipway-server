@@ -8,7 +8,6 @@ import {
   placeBaseSearchRequest,
 } from "../requests/neshanAPIs";
 import { TRPCError } from "@trpc/server";
-import path from "path";
 
 type AppRouterArgsController<T = null> = T extends null
   ? {
@@ -82,7 +81,7 @@ export type ZipwayConfigPayload = z.infer<typeof ZipwayConfigPayloadSchema>;
 export async function zipwayConfigController({
   ctx,
 }: AppRouterArgsController<ZipwayConfig>): Promise<ZipwayConfigPayload> {
-  const { user, prisma, req } = ctx;
+  const { user, prisma } = ctx;
   const response = await axios.get(
     process.env.SNAPP_TILE_MAP_JSON_URL as string
   );
