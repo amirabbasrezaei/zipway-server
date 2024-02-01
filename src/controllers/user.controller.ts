@@ -50,7 +50,7 @@ export async function createUserController({
     data: {
       phoneNumber,
       name: nameAndFamily,
-      credit: process.env.INITIAL_CREDIT as unknown
+      credit: Number(process.env.INITIAL_CREDIT as string)
     },
   });
 
