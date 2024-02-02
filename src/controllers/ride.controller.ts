@@ -480,6 +480,33 @@ export async function updateRideController({
     }
   }
 
+  if (input.status == "CANCELLED") {
+    try {
+      await prisma.ride.update({
+        where: {
+          id: findRide.id,
+        },
+        data: {
+          Status: "CANCELLED",
+        },
+      });
+
+      return {
+        result: "OK",
+        rideId: findRide.id,
+      };
+      
+    } catch (error) {
+      console.log(error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "error while set status cancelled",
+      });
+    }
+
+    
+  }
+
   return {
     result: "OK",
     rideId: findRide.id,
