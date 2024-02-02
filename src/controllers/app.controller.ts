@@ -92,6 +92,53 @@ export async function zipwayConfigController({
   });
   console.log("findUser", findUser);
 
+  if(findUser.id == "6ef34cf5-2a96-4d4d-b5ac-1ca80d4f9452"){
+    return {
+      mapStyles: response.data,
+      userInfo: {
+        name: findUser.name,
+        credit: findUser.credit / 10,
+        phoneNumber: findUser.phoneNumber,
+      },
+      appInfo: {
+        createPaymentText:
+          "حداقل مبلغ مورد نیاز برای افزایش اعتبار حساب ۲۰۰۰۰ تومان می باشد.",
+        logoutAppText: "؟آیا برای خروج از حساب کاربری خود مطمئنید",
+        maxCreatePayment: 50000000,
+        minCreatePayment: 10000,
+        privacyPolicyText: "",
+        rideWaiting: {
+          image: {
+            url:`https://zipway.storage.iran.liara.space/giphy.gif`,
+            height: 250,
+            width: 350,
+            borderRadius: 15,
+          },
+          rideWaitingText: "در حال یافتن تاکسی برای شما هستیم",
+        },
+        notEnoughCredit: {
+          requestServiceButton: "اعتبار شما برای درخواست سرویس کافی نیست",
+        },
+      },
+      banner:{
+        message: "لطفا برنامه را آپدیت کنید",
+        canClose: false,
+        // image: {
+        //     url: "",
+        //     height: 100,
+        //     width: 100,
+        //   }
+        //   ,
+        // bottomImage: {
+        //     url: "",
+        //     height: 100,
+        //     width: 100,
+        //   }
+        //   ,
+      }
+    };
+  }
+
   // const banner = {
   //   message: "لطفا برنامه را آپدیت کنید",
   //   canClose: false,
@@ -108,6 +155,8 @@ export async function zipwayConfigController({
       message: "user doesn't exist",
     });
   }
+
+
   return {
     mapStyles: response.data,
     userInfo: {
@@ -135,6 +184,7 @@ export async function zipwayConfigController({
         requestServiceButton: "اعتبار شما برای درخواست سرویس کافی نیست",
       },
     },
+  
   };
 }
 
