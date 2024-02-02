@@ -34,6 +34,7 @@ const BannerType = z.object({
       url: z.string(),
       height: z.number(),
       width: z.number(),
+      link: z.string().optional()
     })
     .optional(),
   bottomImage: z
@@ -41,6 +42,7 @@ const BannerType = z.object({
       url: z.string(),
       height: z.number(),
       width: z.number(),
+      link: z.string().optional()
     })
     .optional(),
 });
@@ -142,11 +144,11 @@ export async function zipwayConfigController({
       banner:{
         message: "لطفا برنامه را آپدیت کنید",
         canClose: false,
-        // image: {
-        //     url: "",
-        //     height: 100,
-        //     width: 100,
-        //   }
+        image: {
+            url: "https://zipway.storage.iran.liara.space/zipway_update.png",
+            height: 100,
+            width: 100,
+          }
         //   ,
         // bottomImage: {
         //     url: "",
