@@ -132,8 +132,8 @@ export async function zipwayConfigController({
         rideWaiting: {
           image: {
             url:`https://zipway.storage.iran.liara.space/giphy.gif`,
-            height: 355,
-            width: 355,
+            height: 250,
+            width: 350,
             borderRadius: 15,
           },
           rideWaitingText: "در حال یافتن تاکسی برای شما هستیم",
@@ -147,8 +147,8 @@ export async function zipwayConfigController({
         canClose: false,
         image: {
             url: "https://zipway.storage.iran.liara.space/Group%2075zipway_updatev2.1.0.png",
-            height: 400,
-            width: 400,
+            height: 410,
+            width: 410,
           }
         //   ,
         // bottomImage: {
