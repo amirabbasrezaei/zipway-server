@@ -106,7 +106,7 @@ export async function requestNewRideController({
 
 //// *** ////
 
-//// update ride ////
+//////////////////////////////////////////////// update ride ////
 const RideStatusSchema = z.enum([
   "FINDING_DRIVER",
   "ACCEPTED",
@@ -434,7 +434,7 @@ export async function updateRideController({
     }
   }
 
-  if (input.status == "ACCEPTED" && input?.trip) {
+  if (input.status == "ACCEPTED" ) {
     try {
       await prisma.user.update({
         where: {
@@ -442,7 +442,7 @@ export async function updateRideController({
         },
         data: {
           credit: {
-            decrement: Number(process.env.COMMISSION),
+            decrement: Number(process.env.COMMISSION as string),
           },
         },
       });
@@ -495,7 +495,7 @@ export async function updateRideController({
         result: "OK",
         rideId: findRide.id,
       };
-      
+
     } catch (error) {
       console.log(error);
       throw new TRPCError({
