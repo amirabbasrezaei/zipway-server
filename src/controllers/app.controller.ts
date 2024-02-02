@@ -146,7 +146,7 @@ export async function zipwayConfigController({
         message: "لطفا برنامه را آپدیت کنید",
         canClose: false,
         image: {
-            url: "https://zipway.storage.iran.liara.space/zipway_update.png",
+            url: "https://zipway.storage.iran.liara.space/Group%2075zipway_updatev2.1.0.png",
             height: 400,
             width: 400,
           }
