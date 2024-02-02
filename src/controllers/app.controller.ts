@@ -143,7 +143,7 @@ export async function zipwayConfigController({
         },
       },
       banner:{
-        message: "لطفا برنامه را آپدیت کنید",
+        message: "نسخه جدیدی از برنامه موجود است. \n لطفا برنامه را آپدیت کنید.",
         canClose: false,
         image: {
             url: "https://zipway.storage.iran.liara.space/Group%2075zipway_updatev2.1.0.png",
