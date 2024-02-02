@@ -82,6 +82,7 @@ export type ZipwayConfigPayload = z.infer<typeof ZipwayConfigPayloadSchema>;
 
 export async function zipwayConfigController({
   ctx,
+  input
 }: AppRouterArgsController<ZipwayConfig>): Promise<ZipwayConfigPayload> {
   const { user, prisma } = ctx;
   const response = await axios.get(
@@ -113,7 +114,7 @@ export async function zipwayConfigController({
     });
   }
 
-  if(findUser.id == "6ef34cf5-2a96-4d4d-b5ac-1ca80d4f9452"){
+  if(Number(input.appVersion.split('.').join()) < 210){
     return {
       mapStyles: response.data,
       userInfo: {
