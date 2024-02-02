@@ -146,8 +146,8 @@ export async function zipwayConfigController({
         canClose: false,
         image: {
             url: "https://zipway.storage.iran.liara.space/zipway_update.png",
-            height: 650,
-            width: 650,
+            height: 400,
+            width: 400,
           }
         //   ,
         // bottomImage: {
