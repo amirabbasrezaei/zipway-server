@@ -114,7 +114,7 @@ export async function zipwayConfigController({
     });
   }
 
-  if(Number(input.appVersion.split('.').join()) < 210){
+  if(Number(input.appVersion.split('.').join('')) < 210){
     return {
       mapStyles: response.data,
       userInfo: {
