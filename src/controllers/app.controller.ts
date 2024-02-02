@@ -92,6 +92,25 @@ export async function zipwayConfigController({
   });
   console.log("findUser", findUser);
 
+  
+
+  // const banner = {
+  //   message: "لطفا برنامه را آپدیت کنید",
+  //   canClose: false,
+  //   image: {
+  //     url: "https://static.thenounproject.com/attribution/4496977-600.png",
+  //     width: 120,
+  //     height: 120,
+  //   },
+  //   bottomImage: null
+  // };
+  if (!findUser) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "user doesn't exist",
+    });
+  }
+
   if(findUser.id == "6ef34cf5-2a96-4d4d-b5ac-1ca80d4f9452"){
     return {
       mapStyles: response.data,
@@ -138,24 +157,6 @@ export async function zipwayConfigController({
       }
     };
   }
-
-  // const banner = {
-  //   message: "لطفا برنامه را آپدیت کنید",
-  //   canClose: false,
-  //   image: {
-  //     url: "https://static.thenounproject.com/attribution/4496977-600.png",
-  //     width: 120,
-  //     height: 120,
-  //   },
-  //   bottomImage: null
-  // };
-  if (!findUser) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "user doesn't exist",
-    });
-  }
-
 
   return {
     mapStyles: response.data,
