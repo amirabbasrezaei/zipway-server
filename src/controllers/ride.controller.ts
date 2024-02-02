@@ -434,7 +434,7 @@ export async function updateRideController({
     }
   }
 
-  if (input.status == "ACCEPTED" ) {
+  if (input.status == "ACCEPTED" && input?.trip) {
     try {
       await prisma.user.update({
         where: {
@@ -460,11 +460,11 @@ export async function updateRideController({
           id: findRide.id,
         },
         data: {
-          Status: input.status,
+          Status: "ACCEPTED",
           chosenServiceProvider: input.trip.provider,
           finalPrice: input.trip.price,
           numberOfPassengers: input.trip.numberOfPassengers,
-          commission: Number(process.env.COMMISSION),
+          commission: Number(process.env.COMMISSION as string),
         },
       });
       return {
