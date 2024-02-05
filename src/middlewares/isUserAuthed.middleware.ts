@@ -17,7 +17,7 @@ export const isUserAuthed = async ({ ctx, next }: IsUserAuthed) => {
   if (!accessToken) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
-      message: "you are not authorize to request",
+      message: "you are not authorize to request"
     });
   }
 
