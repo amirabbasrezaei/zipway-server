@@ -20,11 +20,14 @@ model User {
   credit      Int       @default(0)
   Payment     Payment[]
   Session     Session[]
+  createdAt   DateTime  @default(now())
   Ride        Ride[]
+  lastlogin   DateTime
 }
 
 model Session {
   id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
   expireDate DateTime @default(now())
   userId     String
   user       User     @relation(fields: [userId], references: [id])
@@ -85,38 +88,38 @@ enum RideServiceProvider {
 }
 
 model SnappRide {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   snappRideId String?
   serviceType String
   Rider       Rider[]
   price       Int
-  Ride        Ride?   @relation(fields: [rideId], references: [id])
+  Ride        Ride?    @relation(fields: [rideId], references: [id])
   rideId      String
   isChosen    Boolean? @default(false)
 }
 
 model MaximRide {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   maximRideId String?
   serviceType String
   price       Int
   Rider       Rider[]
-  Ride        Ride?   @relation(fields: [rideId], references: [id])
+  Ride        Ride?    @relation(fields: [rideId], references: [id])
   rideId      String
   isChosen    Boolean? @default(false)
 }
 
 model TapsiRide {
-  id           String  @id @default(uuid())
+  id           String   @id @default(uuid())
   tapsiRideId  String?
   serviceType  String
   categoryType String
   token        String
   price        Int
   Rider        Rider[]
-  Ride         Ride    @relation(fields: [rideId], references: [id])
+  Ride         Ride     @relation(fields: [rideId], references: [id])
   rideId       String
-  isChosen     Boolean?  
+  isChosen     Boolean?
 }
 
 model Rider {

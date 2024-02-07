@@ -5,6 +5,7 @@ interface IsUserAuthed {
   next: any;
   ctx: Context;
 }
+
 // interface NextArgs extends Context {
 //   user: object
 // }

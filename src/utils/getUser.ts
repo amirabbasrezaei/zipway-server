@@ -19,11 +19,14 @@ async function getUserSession(
     },
   });
   if (session) {
-    const user = await prisma.user.findUnique({
+    const [user] = await prisma.$transaction([prisma.user.findUnique({
       where: {
         id: session.userId,
       },
-    });
+    }), prisma.user.update({
+      where:{id: session.userId},
+      data:{lastlogin: new Date(Date.now())}
+    })]);
     if (user) {
       return { user, session };
     }
