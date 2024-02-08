@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon src/server.ts",
     "build": "npx prisma generate",
-    "start": "npx prisma migrate deploy && ts-node src/server.ts"
+    "start": " npx prisma migrate deploy && ts-node src/server.ts"
   },
   "dependencies": {
     "@prisma/client": "4.15.0",
