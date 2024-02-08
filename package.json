@@ -8,7 +8,7 @@
     "start": "npx prisma migrate deploy && ts-node src/server.ts"
   },
   "dependencies": {
-    "@prisma/client": "5.9.1",
+    "@prisma/client": "4.15.0",
     "@trpc/client": "^10.28.0",
     "@trpc/react-query": "^10.28.0",
     "@trpc/server": "^10.28.0",
