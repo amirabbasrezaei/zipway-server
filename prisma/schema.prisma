@@ -20,14 +20,11 @@ model User {
   credit      Int       @default(0)
   Payment     Payment[]
   Session     Session[]
-  createdAt   DateTime  @default(now())
   Ride        Ride[]
-  lastlogin   DateTime
 }
 
 model Session {
   id         String   @id @default(uuid())
-  createdAt  DateTime @default(now())
   expireDate DateTime @default(now())
   userId     String
   user       User     @relation(fields: [userId], references: [id])
