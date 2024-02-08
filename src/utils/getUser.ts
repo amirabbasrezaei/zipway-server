@@ -23,9 +23,6 @@ async function getUserSession(
       where: {
         id: session.userId,
       },
-    }), prisma.user.update({
-      where:{id: session.userId},
-      data:{lastlogin: new Date(Date.now())}
     })]);
     if (user) {
       return { user, session };
