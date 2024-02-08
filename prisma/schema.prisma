@@ -21,6 +21,8 @@ model User {
   Payment     Payment[]
   Session     Session[]
   Ride        Ride[]
+  createdAt   DateTime  @default(now())
+  lastLogin   DateTime?
 }
 
 model Session {
@@ -28,6 +30,7 @@ model Session {
   expireDate DateTime @default(now())
   userId     String
   user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
 }
 
 model Payment {
