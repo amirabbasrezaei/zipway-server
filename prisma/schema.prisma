@@ -45,6 +45,8 @@ model Payment {
   paymentUrl           String?
   value                Int
   user                 User      @relation(fields: [userId], references: [id])
+  cardNumber           String?
+  paymentDescription   String?
 }
 
 model Ride {

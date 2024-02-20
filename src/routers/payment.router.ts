@@ -3,14 +3,28 @@ import {
   createPaymentSchema,
   inquiryPaymentController,
   inquiryPaymentSchema,
-} from "../controllers/payment.controller";
+} from "../controllers/payment(v1)/payment.controller";
+
+import {
+  createPaymentControllerZibal,
+  createPaymentSchemaZibal,
+  inquiryPaymentControllerZibal,
+  inquiryPaymentSchemaZibal,
+  
+} from "../controllers/payment(v1)/payment.zibal.controller";
+
+
 import { router, userProtectedProcedure } from "../trpc";
 
 export const paymentRouter = router({
-  createPayment: userProtectedProcedure
+  createPayment: (process.env.PAYMENT_PROVIDER as string == "IDPAY") ? userProtectedProcedure
     .input(createPaymentSchema)
-    .mutation(createPaymentController),
-  inquiryPayment: userProtectedProcedure
+    .mutation(createPaymentController) : userProtectedProcedure
+    .input(createPaymentSchemaZibal)
+    .mutation(createPaymentControllerZibal) ,
+  inquiryPayment: (process.env.PAYMENT_PROVIDER as string == "IDPAY") ? userProtectedProcedure
     .input(inquiryPaymentSchema)
-    .mutation(inquiryPaymentController),
+    .mutation(inquiryPaymentController) : userProtectedProcedure
+    .input(inquiryPaymentSchemaZibal)
+    .mutation(inquiryPaymentControllerZibal),
 });
