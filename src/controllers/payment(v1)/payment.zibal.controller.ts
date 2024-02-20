@@ -87,10 +87,8 @@ export async function createPaymentControllerZibal({ ctx, input }: PaymentRouter
 }
 
 export const inquiryPaymentSchemaZibal = z.object({
-    order_id: z.string(),
-    track_id: z.string(),
-    status: z.string().optional(),
-    servicePaymentId: z.string().optional()
+    orderId: z.string(),
+    trackId: z.string()
 });
 
 type InquiryPaymentPayloadZibal =
