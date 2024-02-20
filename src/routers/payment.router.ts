@@ -3,7 +3,7 @@ import {
   createPaymentSchema,
   inquiryPaymentController,
   inquiryPaymentSchema,
-} from "../controllers/payment(v1)/payment.controller";
+} from "../controllers/payment(v1)/payment.idpay.controller";
 
 import {
   createPaymentControllerZibal,

@@ -66,7 +66,8 @@ export async function createPaymentControllerZibal({ ctx, input }: PaymentRouter
         if (data) {
             const updatedPayment = await ctx.prisma.payment.update({
                 data: {
-                    trackId: data.trackId,
+                    trackId: String(data.trackId),
+
                 },
                 where: {
                     id: payment.id
@@ -116,7 +117,7 @@ export async function inquiryPaymentControllerZibal({
 
     const verifyBody = {
         "merchant": process.env.ZIBAL_MERCHANT_CODE as string,
-        "trackId": input.track_id
+        "trackId": Number(input.track_id)
     };
 
     try {
