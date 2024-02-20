@@ -116,7 +116,7 @@ export async function inquiryPaymentControllerZibal({
 
     const verifyBody = {
         "merchant": process.env.ZIBAL_MERCHANT_CODE as string,
-        "trackId": Number(input.track_id)
+        "trackId": Number(input.trackId)
     };
     console.log(0)
     try {
@@ -126,7 +126,7 @@ export async function inquiryPaymentControllerZibal({
             
             await prisma.$transaction([prisma.payment.update({
                 where: {
-                    id: Number(input.order_id)
+                    id: Number(input.orderId)
                 }, data: {
                     cardNumber: verifyTransaction.data.cardNumber,
                     isPayed: true,
@@ -149,7 +149,7 @@ export async function inquiryPaymentControllerZibal({
         if (verifyTransaction.data.result == 102) {
             await prisma.payment.update({
                 where: {
-                    id: Number(input.order_id)
+                    id: Number(input.orderId)
                 }, data: {
                     cardNumber: verifyTransaction.data.cardNumber,
                     isPayed: false,
@@ -163,7 +163,7 @@ export async function inquiryPaymentControllerZibal({
         if (verifyTransaction.data.result == 103) {
             await prisma.payment.update({
                 where: {
-                    id: Number(input.order_id)
+                    id: Number(input.orderId)
                 }, data: {
                     cardNumber: verifyTransaction.data.cardNumber,
                     isPayed: false,
@@ -177,7 +177,7 @@ export async function inquiryPaymentControllerZibal({
         if (verifyTransaction.data.result == 104) {
             await prisma.payment.update({
                 where: {
-                    id: Number(input.order_id)
+                    id: Number(input.orderId)
                 }, data: {
                     cardNumber: verifyTransaction.data.cardNumber,
                     isPayed: false,
@@ -190,7 +190,7 @@ export async function inquiryPaymentControllerZibal({
         if (verifyTransaction.data.result == 201) {
             await prisma.payment.update({
                 where: {
-                    id: Number(input.order_id)
+                    id: Number(input.orderId)
                 }, data: {
                     cardNumber: verifyTransaction.data.cardNumber,
                     isPayed: false,
@@ -203,7 +203,7 @@ export async function inquiryPaymentControllerZibal({
         if (verifyTransaction.data.result == 202) {
             await prisma.payment.update({
                 where: {
-                    id: Number(input.order_id)
+                    id: Number(input.orderId)
                 }, data: {
                     cardNumber: verifyTransaction.data.cardNumber,
                     isPayed: false,
@@ -217,7 +217,7 @@ export async function inquiryPaymentControllerZibal({
 
             await prisma.payment.update({
                 where: {
-                    id: Number(input.order_id)
+                    id: Number(input.orderId)
                 }, data: {
                     cardNumber: verifyTransaction.data.cardNumber,
                     isPayed: false,
