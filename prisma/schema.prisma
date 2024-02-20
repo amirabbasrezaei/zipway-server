@@ -34,7 +34,7 @@ model Session {
 }
 
 model Payment {
-  id                   String    @id @default(uuid())
+  id                   Int       @id @default(autoincrement())
   payment_create_date  DateTime  @default(now())
   payment_success_date DateTime?
   userId               String
