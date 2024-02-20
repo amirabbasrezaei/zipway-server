@@ -89,7 +89,8 @@ export async function createPaymentControllerZibal({ ctx, input }: PaymentRouter
 export const inquiryPaymentSchemaZibal = z.object({
     order_id: z.string(),
     track_id: z.string(),
-    status: z.string().optional()
+    status: z.string().optional(),
+    servicePaymentId: z.string().optional()
 });
 
 type InquiryPaymentPayloadZibal =
@@ -119,10 +120,12 @@ export async function inquiryPaymentControllerZibal({
         "merchant": process.env.ZIBAL_MERCHANT_CODE as string,
         "trackId": Number(input.track_id)
     };
-
+    console.log(0)
     try {
         const verifyTransaction = await axios.post(`${BASE_URL}/v1/verify`, verifyBody)
+        console.log(verifyTransaction.data)
         if (verifyTransaction.data.result == 100) {
+            
             await prisma.$transaction([prisma.payment.update({
                 where: {
                     id: input.order_id
