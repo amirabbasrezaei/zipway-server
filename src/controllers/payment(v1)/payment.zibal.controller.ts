@@ -57,7 +57,7 @@ export async function createPaymentControllerZibal({ ctx, input }: PaymentRouter
             "callbackUrl": "https://zipway.ir/payment",
             "mobile": findUser.phoneNumber,
             "description": "",
-            "orderId": payment.id,
+            "orderId": String(payment.id),
             "feeMode": 2,
             "linkToPay": true
         };
