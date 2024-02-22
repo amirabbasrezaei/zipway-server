@@ -19,14 +19,20 @@ async function getUserSession(
     },
   });
   if (session) {
-    const [user] = await prisma.$transaction([prisma.user.findUnique({
-      where: {
-        id: session.userId,
-      },
-    }), prisma.user.update({
-      where:{id: session.userId},
-      data:{lastLogin: new Date(Date.now())}
-    })]);
+    const [user] = await prisma.$transaction([
+      prisma.user.findUnique({
+        where: {
+          id: session.userId,
+        },
+      }),
+      prisma.user.update({
+        where: { id: session.userId },
+        data: {
+          lastLogin: new Date(Date.now()),
+          numberOfLogins: { increment: 1 },
+        },
+      }),
+    ]);
     if (user) {
       return { user, session };
     }
@@ -45,13 +51,12 @@ async function checkRefreshToken(req: Request): Promise<{ user: User | null }> {
     // @ts-ignore
     return await getUserSession(verifyRefreshToken.sessionId as string)
       .then(({ user }: any) => {
-        
         return { user };
       })
       .catch(() => {
         throw new TRPCError({
           code: "UNAUTHORIZED",
-          message: 'you are not authorize to request'
+          message: "you are not authorize to request",
         });
       });
   }
@@ -61,8 +66,11 @@ async function checkRefreshToken(req: Request): Promise<{ user: User | null }> {
 function checkAccessToken(req: Request) {
   const accessToken = req.cookies["accessToken"];
   if (accessToken) {
-    const token = jwt.verify(accessToken, process.env.JWT_PRIVATE_KEY as Secret);
-    return token
+    const token = jwt.verify(
+      accessToken,
+      process.env.JWT_PRIVATE_KEY as Secret
+    );
+    return token;
   }
   return null;
 }

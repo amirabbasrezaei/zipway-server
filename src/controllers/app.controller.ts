@@ -250,6 +250,8 @@ export async function placeBaseSearchController({
     region: location.subtext1,
   }));
 
+  console.log(convertResponse)
+
   return convertResponse;
 }
 

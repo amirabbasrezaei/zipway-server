@@ -8,21 +8,22 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  name        String    @db.VarChar(20)
-  familyName  String?
-  password    String?
-  email       String?   @unique
-  phoneNumber String    @unique
-  role        role      @default(USER)
-  loginCode   String?
-  isVerified  Boolean   @default(false)
-  credit      Int       @default(0)
-  Payment     Payment[]
-  Session     Session[]
-  Ride        Ride[]
-  createdAt   DateTime  @default(now())
-  lastLogin   DateTime?
+  id             String    @id @default(uuid())
+  name           String    @db.VarChar(20)
+  familyName     String?
+  password       String?
+  email          String?   @unique
+  phoneNumber    String    @unique
+  role           role      @default(USER)
+  loginCode      String?
+  isVerified     Boolean   @default(false)
+  credit         Int       @default(0)
+  Payment        Payment[]
+  Session        Session[]
+  Ride           Ride[]
+  createdAt      DateTime  @default(now())
+  lastLogin      DateTime?
+  numberOfLogins Int?      @default(1)
 }
 
 model Session {
