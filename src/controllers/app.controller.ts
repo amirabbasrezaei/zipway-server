@@ -8,6 +8,7 @@ import {
   placeBaseSearchRequest,
 } from "../requests/neshanAPIs";
 import { TRPCError } from "@trpc/server";
+import { AddresToCoordinate } from "../requests/baladAPIs";
 
 type AppRouterArgsController<T = null> = T extends null
   ? {
@@ -34,7 +35,7 @@ const BannerType = z.object({
       url: z.string(),
       height: z.number(),
       width: z.number(),
-      link: z.string().optional()
+      link: z.string().optional(),
     })
     .optional(),
   bottomImage: z
@@ -42,7 +43,7 @@ const BannerType = z.object({
       url: z.string(),
       height: z.number(),
       width: z.number(),
-      link: z.string().optional()
+      link: z.string().optional(),
     })
     .optional(),
 });
@@ -78,11 +79,9 @@ export const ZipwayConfigPayloadSchema = z.object({
 
 export type ZipwayConfigPayload = z.infer<typeof ZipwayConfigPayloadSchema>;
 
-
-
 export async function zipwayConfigController({
   ctx,
-  input
+  input,
 }: AppRouterArgsController<ZipwayConfig>): Promise<ZipwayConfigPayload> {
   const { user, prisma } = ctx;
   const response = await axios.get(
@@ -94,8 +93,6 @@ export async function zipwayConfigController({
     },
   });
   console.log("findUser", findUser);
-
-  
 
   // const banner = {
   //   message: "لطفا برنامه را آپدیت کنید",
@@ -114,7 +111,7 @@ export async function zipwayConfigController({
     });
   }
 
-  if(Number(input.appVersion.split('.').join('')) < 210){
+  if (Number(input.appVersion.split(".").join("")) < 210) {
     return {
       mapStyles: response.data,
       userInfo: {
@@ -131,7 +128,7 @@ export async function zipwayConfigController({
         privacyPolicyText: "",
         rideWaiting: {
           image: {
-            url:`https://zipway.storage.iran.liara.space/giphy.gif`,
+            url: `https://zipway.storage.iran.liara.space/giphy.gif`,
             height: 250,
             width: 350,
             borderRadius: 15,
@@ -142,14 +139,14 @@ export async function zipwayConfigController({
           requestServiceButton: "اعتبار شما برای درخواست سرویس کافی نیست",
         },
       },
-      banner:{
+      banner: {
         message: "لطفا منو آپدیت کن. کلی ویژگی باحال توی راهه :)",
         canClose: false,
         image: {
-            url: "https://zipway.storage.iran.liara.space/Group%2075zipway_updatev2.1.0.png",
-            height: 410,
-            width: 410,
-          }
+          url: "https://zipway.storage.iran.liara.space/Group%2075zipway_updatev2.1.0.png",
+          height: 410,
+          width: 410,
+        },
         //   ,
         // bottomImage: {
         //     url: "",
@@ -157,7 +154,7 @@ export async function zipwayConfigController({
         //     width: 100,
         //   }
         //   ,
-      }
+      },
     };
   }
 
@@ -177,7 +174,7 @@ export async function zipwayConfigController({
       privacyPolicyText: "",
       rideWaiting: {
         image: {
-          url:`https://zipway.storage.iran.liara.space/giphy.gif`,
+          url: `https://zipway.storage.iran.liara.space/giphy.gif`,
           height: 250,
           width: 350,
           borderRadius: 15,
@@ -188,7 +185,6 @@ export async function zipwayConfigController({
         requestServiceButton: "اعتبار شما برای درخواست سرویس کافی نیست",
       },
     },
-  
   };
 }
 
@@ -208,24 +204,55 @@ export async function coordinateToAddressController({
 
   return response;
 }
+const searchedItems = z.object({
+  location: z.object({ x: z.number(), y: z.number() }),
+  title: z.string(),
+  region: z.string(),
+});
 
+export const placeBaseSearchPayloadSchema = z.object({
+  items: z.array(searchedItems),
+});
 export const placeBaseSearchSchema = z.object({
   latitude: z.string(),
   longitude: z.string(),
   searchTerm: z.string(),
+  polygon: z.array(z.object({ x: z.number(), y: z.number() })).optional(),
+  zoom: z.number().optional(),
 });
-export type PlaceBaseSearch = z.infer<typeof placeBaseSearchSchema>;
+export type PlaceBaseSearchArgs = z.infer<typeof placeBaseSearchSchema>;
+export type placeBaseSearchPayload = z.infer<
+  typeof placeBaseSearchPayloadSchema
+>;
 
 export async function placeBaseSearchController({
   input,
-}: AppRouterArgsController<PlaceBaseSearch>): Promise<PlaceBaseSearchRequestPayload> {
-  const response = await placeBaseSearchRequest({
+}: AppRouterArgsController<PlaceBaseSearchArgs>): Promise<placeBaseSearchPayload> {
+  /// # NESHAN SERVICE
+  // const response = await placeBaseSearchRequest({
+  //   latitude: input.latitude,
+  //   longitude: input.longitude,
+  //   searchTerm: input.searchTerm,
+  // });
+
+  const baladResponse = await AddresToCoordinate({
     latitude: input.latitude,
     longitude: input.longitude,
     searchTerm: input.searchTerm,
   });
 
-  return response;
+  const convertResponse: any = {};
+
+  convertResponse.items = baladResponse?.results.map((location: any) => ({
+    location: {
+      x: location.coordinates.geometry[0],
+      y: location.coordinates.geometry[1],
+    },
+    title: location.maintext,
+    region: location.subtext1,
+  }));
+
+  return convertResponse;
 }
 
 type AppLogsPayload = {
