@@ -164,10 +164,10 @@ export async function zipwayConfigController({
     },
     appInfo: {
       createPaymentText:
-        "حداقل مبلغ مورد نیاز برای افزایش اعتبار حساب ۲۰۰۰۰ تومان می باشد.",
+        "حداقل مبلغ مورد نیاز برای افزایش اعتبار حساب ۱۰۰۰۰ تومان می باشد.",
       logoutAppText: "؟آیا برای خروج از حساب کاربری خود مطمئنید",
       maxCreatePayment: 50000000,
-      minCreatePayment: 1000,
+      minCreatePayment: 10000,
       privacyPolicyText: "",
       rideWaiting: {
         image: {
