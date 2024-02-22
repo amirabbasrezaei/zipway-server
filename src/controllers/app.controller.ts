@@ -241,16 +241,16 @@ export async function placeBaseSearchController({
 
   const convertResponse: any = {};
 
-  convertResponse.items = baladResponse?.results.map((location: any) => ({
-    location: {
-      x: location.coordinates.geometry[0],
-      y: location.coordinates.geometry[1],
+  convertResponse.items = baladResponse?.results?.map((location: any) => (location.geometry && {
+    'location': {
+      x:  location.geometry.type == 'MultiPoint' ? location.geometry.coordinates[0][0] : location.geometry.coordinates[0][0][0][0],
+      y: location.geometry.type == 'MultiPoint' ? location.geometry.coordinates[0][1]: location.geometry.coordinates[0][0][0][1],
     },
-    title: location.maintext,
-    region: location.subtext1,
+    'title': location.maintext,
+    'region': location.subtext1,
   }));
 
-  console.log(convertResponse)
+  
 
   return convertResponse;
 }
