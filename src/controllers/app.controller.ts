@@ -242,14 +242,14 @@ export async function placeBaseSearchController({
   
     const convertResponse: any = {};
   
-    convertResponse.items = baladResponse?.results?.map((location: any) => (location.geometry && {
+    convertResponse.items = baladResponse?.results?.map((location: any) => location.geometry && ( {
       'location': {
         x:  location.geometry.type == 'MultiPoint' ? location.geometry.coordinates[0][0] : location.geometry.coordinates[0][0][0][0],
         y: location.geometry.type == 'MultiPoint' ? location.geometry.coordinates[0][1]: location.geometry.coordinates[0][0][0][1],
       },
       'title': location.maintext,
       'region': location.subtext1,
-    }));
+    })).filter((x: any) => x != null);
   
     
   
