@@ -232,7 +232,7 @@ export async function placeBaseSearchController({
   //   longitude: input.longitude,
   //   searchTerm: input.searchTerm,
   // });
-
+  console.log(input)
   try {
     const baladResponse = await AddresToCoordinate({
       latitude: input.latitude,
