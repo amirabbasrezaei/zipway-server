@@ -233,26 +233,33 @@ export async function placeBaseSearchController({
   //   searchTerm: input.searchTerm,
   // });
 
-  const baladResponse = await AddresToCoordinate({
-    latitude: input.latitude,
-    longitude: input.longitude,
-    searchTerm: input.searchTerm,
-  });
-
-  const convertResponse: any = {};
-
-  convertResponse.items = baladResponse?.results?.map((location: any) => (location.geometry && {
-    'location': {
-      x:  location.geometry.type == 'MultiPoint' ? location.geometry.coordinates[0][0] : location.geometry.coordinates[0][0][0][0],
-      y: location.geometry.type == 'MultiPoint' ? location.geometry.coordinates[0][1]: location.geometry.coordinates[0][0][0][1],
-    },
-    'title': location.maintext,
-    'region': location.subtext1,
-  }));
-
+  try {
+    const baladResponse = await AddresToCoordinate({
+      latitude: input.latitude,
+      longitude: input.longitude,
+      searchTerm: input.searchTerm,
+    });
   
+    const convertResponse: any = {};
+  
+    convertResponse.items = baladResponse?.results?.map((location: any) => (location.geometry && {
+      'location': {
+        x:  location.geometry.type == 'MultiPoint' ? location.geometry.coordinates[0][0] : location.geometry.coordinates[0][0][0][0],
+        y: location.geometry.type == 'MultiPoint' ? location.geometry.coordinates[0][1]: location.geometry.coordinates[0][0][0][1],
+      },
+      'title': location.maintext,
+      'region': location.subtext1,
+    }));
+  
+    
+  
+    return convertResponse;
+    
+  } catch (error) {
+    console.log(error)
+  }
 
-  return convertResponse;
+  return{items:[]}
 }
 
 type AppLogsPayload = {
