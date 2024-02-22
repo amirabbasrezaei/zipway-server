@@ -4,40 +4,55 @@ import jwt, { Secret } from "jsonwebtoken";
 import { Session, User } from "prisma/prisma-client";
 import { AccessTokenPayload, RefreshTokenPayload, signJWT } from "./signJWT";
 import { TRPCError } from "@trpc/server";
+import type { TRPCError as Error } from "@trpc/server";
 
-interface GetUserSession {
-  session: Session;
-  user: User;
-}
+type GetUserSession =
+  | {
+      session: Session;
+      user: User;
+    }
+  | Error;
 
 async function getUserSession(
   sessionId: string
-): Promise<GetUserSession | null> {
-  const session = await prisma.session.findUnique({
-    where: {
-      id: sessionId,
-    },
-  });
-  if (session) {
-    const [user] = await prisma.$transaction([
-      prisma.user.findUnique({
-        where: {
-          id: session.userId,
-        },
-      }),
-      prisma.user.update({
-        where: { id: session.userId },
-        data: {
-          lastLogin: new Date(Date.now()),
-          numberOfLogins: { increment: 1 },
-        },
-      }),
-    ]);
-    if (user) {
+): Promise<GetUserSession> {
+
+  try {
+    const session = await prisma.session.findUnique({
+      where: {
+        id: sessionId,
+      },
+    });
+
+    if (session) {
+      const [user] = await prisma.$transaction([
+        prisma.user.findUnique({
+          where: {
+            id: session.userId,
+          },
+        }),
+        prisma.user.update({
+          where: { id: session.userId },
+          data: {
+            lastLogin: new Date(Date.now()),
+            numberOfLogins: { increment: 1 },
+          },
+        }),
+      ]);
+      
+      
+      if (user == null) {
+        return new TRPCError({ code: "NOT_FOUND", cause: "کاربر یافت نشد" });
+      }
+  
       return { user, session };
     }
+  } catch (error) {
+    console.log("session doesn't found")
+    return new TRPCError({code: "UNAUTHORIZED", cause: "لطفا وارد حساب کاربری خود شوید"})
   }
-  return null;
+  
+  return new TRPCError({ code: "NOT_FOUND", cause: "کاربر یافت نشد" });
 }
 
 async function checkRefreshToken(req: Request): Promise<{ user: User | null }> {
