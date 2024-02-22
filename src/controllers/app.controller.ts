@@ -3,10 +3,9 @@ import { Context } from "../context";
 import axios from "axios";
 import {
   CoordinateToAddressRequestPayload,
-  coordinateToAddressRequest,
 } from "../requests/neshanAPIs";
 import { TRPCError } from "@trpc/server";
-import { AddresToCoordinate } from "../requests/baladAPIs";
+import { AddresToCoordinate, coordinateToAddressBaladRequest } from "../requests/baladAPIs";
 
 type AppRouterArgsController<T = null> = T extends null
   ? {
@@ -195,11 +194,13 @@ export type CoordinateToAddress = z.infer<typeof coordinateToAddressSchema>;
 export async function coordinateToAddressController({
   input,
 }: AppRouterArgsController<CoordinateToAddress>): Promise<CoordinateToAddressRequestPayload> {
-  const response = await coordinateToAddressRequest({
+  
+
+
+  const response = await coordinateToAddressBaladRequest({
     latitude: input.latitude,
     longitude: input.longitude,
   });
-
   return response;
 }
 const searchedItems = z.object({

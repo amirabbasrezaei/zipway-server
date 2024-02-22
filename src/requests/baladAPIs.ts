@@ -11,7 +11,10 @@ export async function AddresToCoordinate({latitude, longitude, searchTerm, polyg
     } catch (error) {
         console.log(error)
     }
-    
-    
-    
-} 
+
+}
+
+export async function coordinateToAddressBaladRequest({latitude, longitude}: any) {
+    const response = await axios.get(`https://reverse-geocoding.raah.ir/v1?location=${longitude},${latitude}`)
+    return response.data
+}
