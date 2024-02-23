@@ -42,10 +42,10 @@ export async function requestNewRideController({
   ctx,
 }: RouterArgsController<RequestNewRideControllerArgs>): Promise<RequestNewRideControllerPayload> {
   const { prisma, user } = ctx;
-
+  
   const findUser = await prisma.user.findUnique({
     where: {
-      id: user.userId,
+      id: user.userId
     },
   });
   if (!findUser) {
@@ -191,15 +191,16 @@ export async function updateRideController({
   const findRide = await prisma.ride.findFirst({
     where: {
       id: input.rideId,
-      AND: {
-        passenger: {
-          every: {
-            id: user.userId,
-          },
-        },
-      },
-    },
+      AND:{
+        passenger:{
+          every:{
+            id: user.userId
+          }
+        }
+      }
+    }
   });
+  console.log(findRide)
   if (!findRide) {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
@@ -446,8 +447,8 @@ export async function updateRideController({
           },
         },
       });
-      console.log("ride accepted and credit has successfully decremented")
-
+      console.log("ride accepted and credit has successfully decremented");
+    
       try {
         await prisma.ride.update({
           where: {
@@ -479,8 +480,6 @@ export async function updateRideController({
         message: "error while applying commission",
       });
     }
-
-    
   }
 
   if (input.status == "CANCELLED") {
@@ -498,7 +497,6 @@ export async function updateRideController({
         result: "OK",
         rideId: findRide.id,
       };
-
     } catch (error) {
       console.log(error);
       throw new TRPCError({
@@ -506,11 +504,9 @@ export async function updateRideController({
         message: "error while set status cancelled",
       });
     }
-
-    
   }
 
-  throw new TRPCError({code: "BAD_REQUEST", cause: "خطا در بروزرسانی سفر"})
+  throw new TRPCError({ code: "BAD_REQUEST", cause: "خطا در بروزرسانی سفر" });
 }
 
 //// *** ////
