@@ -447,6 +447,31 @@ export async function updateRideController({
         },
       });
       console.log("ride accepted and credit has successfully decremented")
+
+      try {
+        await prisma.ride.update({
+          where: {
+            id: findRide.id,
+          },
+          data: {
+            Status: "ACCEPTED",
+            chosenServiceProvider: input.trip.provider,
+            finalPrice: input.trip.price,
+            numberOfPassengers: input.trip.numberOfPassengers,
+            commission: Number(process.env.COMMISSION as string),
+          },
+        });
+        return {
+          result: "OK",
+          rideId: findRide.id,
+        };
+      } catch (error) {
+        console.log(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "error while updating trip info",
+        });
+      }
     } catch (error) {
       console.log(error);
       throw new TRPCError({
@@ -455,30 +480,7 @@ export async function updateRideController({
       });
     }
 
-    try {
-      await prisma.ride.update({
-        where: {
-          id: findRide.id,
-        },
-        data: {
-          Status: "ACCEPTED",
-          chosenServiceProvider: input.trip.provider,
-          finalPrice: input.trip.price,
-          numberOfPassengers: input.trip.numberOfPassengers,
-          commission: Number(process.env.COMMISSION as string),
-        },
-      });
-      return {
-        result: "OK",
-        rideId: findRide.id,
-      };
-    } catch (error) {
-      console.log(error);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "error while updating trip info",
-      });
-    }
+    
   }
 
   if (input.status == "CANCELLED") {
