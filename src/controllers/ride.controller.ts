@@ -507,10 +507,7 @@ export async function updateRideController({
     
   }
 
-  return {
-    result: "OK",
-    rideId: findRide.id,
-  };
+  throw new TRPCError({code: "BAD_REQUEST", cause: "خطا در بروزرسانی سفر"})
 }
 
 //// *** ////

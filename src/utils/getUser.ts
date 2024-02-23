@@ -42,17 +42,17 @@ async function getUserSession(
       
       
       if (user == null) {
-        return new TRPCError({ code: "NOT_FOUND", cause: "کاربر یافت نشد" });
+        throw new TRPCError({ code: "NOT_FOUND", cause: "کاربر یافت نشد" });
       }
   
       return { user, session };
     }
   } catch (error) {
     console.log("session doesn't found")
-    return new TRPCError({code: "UNAUTHORIZED", cause: "لطفا وارد حساب کاربری خود شوید"})
+    throw new TRPCError({code: "UNAUTHORIZED", cause: "لطفا وارد حساب کاربری خود شوید"})
   }
   
-  return new TRPCError({ code: "NOT_FOUND", cause: "کاربر یافت نشد" });
+  throw new TRPCError({ code: "NOT_FOUND", cause: "کاربر یافت نشد" });
 }
 
 async function checkRefreshToken(req: Request): Promise<{ user: User | null }> {
