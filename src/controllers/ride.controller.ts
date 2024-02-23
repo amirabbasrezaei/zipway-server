@@ -446,6 +446,7 @@ export async function updateRideController({
           },
         },
       });
+      console.log("ride accepted and credit has successfully decremented")
     } catch (error) {
       console.log(error);
       throw new TRPCError({
