@@ -132,21 +132,21 @@ const TapsiProviderSchema = z.object({
 
 const DriverTypeSchema = z.object({
   plate: z.object({
-    character: z.string(),
-    iran_id: z.number(),
-    part_a: z.number(),
-    part_b: z.number(),
+    character: z.string().optional(),
+    iran_id: z.number().optional(),
+    part_a: z.number().optional(),
+    part_b: z.number().optional(),
   }),
   cellphone: z.string(),
   driver_name: z.string(),
-  image_url: z.string(),
-  plate_number_url: z.string(),
-  vehicle_color: z.string(),
-  vehicle_model: z.string(),
+  image_url: z.string().optional(),
+  plate_number_url: z.string().optional(),
+  vehicle_color: z.string().optional(),
+  vehicle_model: z.string().optional(),
   driver_location_info: z.object({
     lat: z.number(),
     lng: z.number(),
-  }),
+  }).optional(),
 });
 export const updateRideControllerArgsSchema = z.object({
   status: RideStatusSchema,
