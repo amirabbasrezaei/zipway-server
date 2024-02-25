@@ -1,6 +1,4 @@
-// @ts-nocheck
 import * as z from "zod"
-import * as imports from "../null"
 import { role } from "@prisma/client"
 import { CompletePayment, RelatedPaymentModel, CompleteSession, RelatedSessionModel, CompleteRide, RelatedRideModel } from "./index"
 
