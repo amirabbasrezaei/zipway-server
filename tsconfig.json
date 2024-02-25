@@ -27,11 +27,9 @@
     "noUnusedParameters": true /* Report errors on unused parameters. */,
     "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
     "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
 
   },
-  "include": ["src", "src/controllers/type.d.ts", "prisma/zod"],
+  "include": ["src", "src/controllers/type.d.ts"],
   "exclude": [
     "node_modules",
     

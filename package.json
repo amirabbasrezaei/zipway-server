@@ -47,8 +47,7 @@
     "ts-to-zod": "^3.7.2",
     "tsx": "^3.12.7",
     "typescript": "^5.0.4",
-    "wait-port": "^1.0.1",
-    "zod-prisma": "^0.5.4"
+    "wait-port": "^1.0.1"
   },
   "publishConfig": {
     "access": "restricted"
