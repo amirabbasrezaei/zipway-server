@@ -26,9 +26,12 @@
     "noUnusedLocals": true /* Report errors on unused locals. */,
     "noUnusedParameters": true /* Report errors on unused parameters. */,
     "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
-    "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */
+    "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+
   },
-  "include": ["src", "src/controllers/type.d.ts"],
+  "include": ["src", "src/controllers/type.d.ts", "prisma/zod"],
   "exclude": [
     "node_modules"
     // "**/__tests__/"
