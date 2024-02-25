@@ -28,12 +28,14 @@
     "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
     "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
 
   },
-  "include": ["src", "src/controllers/type.d.ts"],
+  "include": ["src", "src/controllers/type.d.ts", "prisma/zod"],
   "exclude": [
-    "node_modules"
-    // "**/__tests__/"
-  ]
+    "node_modules",
+    
+  ],
+  
+  
 }
