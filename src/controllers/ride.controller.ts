@@ -133,9 +133,9 @@ const TapsiProviderSchema = z.object({
 const DriverTypeSchema = z.object({
   plate: z.object({
     character: z.string().optional(),
-    iran_id: z.number().optional(),
-    part_a: z.number().optional(),
-    part_b: z.number().optional(),
+    iran_id: z.string().optional(),
+    part_a: z.string().optional(),
+    part_b: z.string().optional(),
   }),
   cellphone: z.string(),
   driver_name: z.string(),
