@@ -71,6 +71,9 @@ export const ZipwayConfigPayloadSchema = z.object({
     notEnoughCredit: z.object({
       requestServiceButton: z.string(),
     }),
+    ride:z.object({
+      driver_car_icon_url: z.string()
+    })
   }),
 });
 
@@ -135,6 +138,9 @@ export async function zipwayConfigController({
         notEnoughCredit: {
           requestServiceButton: "اعتبار شما برای درخواست سرویس کافی نیست",
         },
+        ride:{
+          driver_car_icon_url: "https://statics.zipway.ir/images/icons/mapwithbearing-03-25.png"
+        }
       },
       banner: {
         message: "لطفا منو آپدیت کن. کلی ویژگی باحال توی راهه :)",
@@ -171,7 +177,7 @@ export async function zipwayConfigController({
       privacyPolicyText: "",
       rideWaiting: {
         image: {
-          url: `https://zipway.storage.iran.liara.space/giphy.gif`,
+          url: `https://statics.zipway.ir/giphy.gif`,
           height: 250,
           width: 350,
           borderRadius: 15,
@@ -181,6 +187,9 @@ export async function zipwayConfigController({
       notEnoughCredit: {
         requestServiceButton: "اعتبار شما برای درخواست سرویس کافی نیست",
       },
+      ride:{
+        driver_car_icon_url: "https://statics.zipway.ir/images/icons/mapwithbearing-03-25.png"
+      }
     },
   };
 }
