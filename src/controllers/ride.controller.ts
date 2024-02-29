@@ -42,10 +42,10 @@ export async function requestNewRideController({
   ctx,
 }: RouterArgsController<RequestNewRideControllerArgs>): Promise<RequestNewRideControllerPayload> {
   const { prisma, user } = ctx;
-  
+
   const findUser = await prisma.user.findUnique({
     where: {
-      id: user.userId
+      id: user.userId,
     },
   });
   if (!findUser) {
@@ -143,10 +143,12 @@ const DriverTypeSchema = z.object({
   plate_number_url: z.string().optional(),
   vehicle_color: z.string().optional(),
   vehicle_model: z.string().optional(),
-  driver_location_info: z.object({
-    lat: z.number(),
-    lng: z.number(),
-  }).optional(),
+  driver_location_info: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+    })
+    .optional(),
 });
 export const updateRideControllerArgsSchema = z.object({
   status: RideStatusSchema,
@@ -191,16 +193,16 @@ export async function updateRideController({
   const findRide = await prisma.ride.findFirst({
     where: {
       id: input.rideId,
-      AND:{
-        passenger:{
-          every:{
-            id: user.userId
-          }
-        }
-      }
-    }
+      AND: {
+        passenger: {
+          every: {
+            id: user.userId,
+          },
+        },
+      },
+    },
   });
-  console.log(findRide)
+  console.log(findRide);
   if (!findRide) {
     throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
@@ -437,18 +439,20 @@ export async function updateRideController({
 
   if (input.status == "ACCEPTED" && input?.trip) {
     try {
-      await prisma.user.update({
-        where: {
-          id: user.userId,
-        },
-        data: {
-          credit: {
-            decrement: Number(process.env.COMMISSION as string),
+      if (findRide.Status !== "ACCEPTED") {
+        await prisma.user.update({
+          where: {
+            id: user.userId,
           },
-        },
-      });
+          data: {
+            credit: {
+              decrement: Number(process.env.COMMISSION as string),
+            },
+          },
+        });
+      }
       console.log("ride accepted and credit has successfully decremented");
-    
+
       try {
         await prisma.ride.update({
           where: {
