@@ -1,5 +1,5 @@
-// import type { inferAsyncReturnType } from "@trpc/server";
-// import { inferAsyncReturnType } from "@trpc/server";
+
+import { DefaultArgs } from "@prisma/client/runtime/library";
 import { inferAsyncReturnType } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { Request, Response } from "express";
@@ -9,11 +9,7 @@ import { Prisma, PrismaClient } from "prisma/prisma-client";
 export const prisma = new PrismaClient();
 
 export type createContextPayload = {
-  prisma: PrismaClient<
-    Prisma.PrismaClientOptions,
-    never,
-    Prisma.RejectOnNotFound | Prisma.RejectPerOperation | undefined
-  >;
+  prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>;
   req: Request<any, any, any, any, Record<string, any>>;
   res: Response<any, Record<string, any>>;
   user?: null | any;

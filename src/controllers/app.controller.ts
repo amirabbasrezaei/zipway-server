@@ -128,7 +128,7 @@ export async function zipwayConfigController({
         privacyPolicyText: "",
         rideWaiting: {
           image: {
-            url: `https://zipway.storage.iran.liara.space/giphy.gif`,
+            url: `https://static.zipways.ir/giphy.gif`,
             height: 250,
             width: 350,
             borderRadius: 15,
@@ -139,7 +139,7 @@ export async function zipwayConfigController({
           requestServiceButton: "اعتبار شما برای درخواست سرویس کافی نیست",
         },
         ride:{
-          driver_car_icon_url: "https://statics.zipway.ir/images/icons/mapwithbearing-03-25.png"
+          driver_car_icon_url: "https://static.zipways.ir/images/icons/mapwithbearing-03-25.png"
         }
       },
       banner: {
@@ -177,7 +177,7 @@ export async function zipwayConfigController({
       privacyPolicyText: "",
       rideWaiting: {
         image: {
-          url: `https://statics.zipway.ir/giphy.gif`,
+          url: `https://static.zipways.ir/giphy.gif`,
           height: 250,
           width: 350,
           borderRadius: 15,
@@ -188,7 +188,7 @@ export async function zipwayConfigController({
         requestServiceButton: "اعتبار شما برای درخواست سرویس کافی نیست",
       },
       ride:{
-        driver_car_icon_url: "https://statics.zipway.ir/images/icons/mapwithbearing-03-25.png"
+        driver_car_icon_url: "https://static.zipways.ir/images/icons/mapwithbearing-03-25.png"
       }
     },
   };

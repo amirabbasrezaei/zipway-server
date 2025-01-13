@@ -9,8 +9,7 @@ import {
   createPaymentControllerZibal,
   createPaymentSchemaZibal,
   inquiryPaymentControllerZibal,
-  inquiryPaymentSchemaZibal,
-  
+  inquiryPaymentSchemaZibal
 } from "../controllers/payment(v1)/payment.zibal.controller";
 
 
